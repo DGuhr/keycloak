@@ -95,6 +95,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
@@ -597,9 +598,9 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
           .navigateTo(employeeAcsServletPage.buildUri())
           .getSamlResponse(Binding.POST);
 
-        Assert.assertThat(samlResponse.getSamlObject(), instanceOf(AuthnRequestType.class));
-        Assert.assertThat(((AuthnRequestType) samlResponse.getSamlObject()).getAssertionConsumerServiceURL(), notNullValue());
-        Assert.assertThat(((AuthnRequestType) samlResponse.getSamlObject()).getAssertionConsumerServiceURL().getPath(), is("/employee-acs/a/different/endpoint/for/saml"));
+        MatcherAssert.assertThat(samlResponse.getSamlObject(), instanceOf(AuthnRequestType.class));
+        MatcherAssert.assertThat(((AuthnRequestType) samlResponse.getSamlObject()).getAssertionConsumerServiceURL(), notNullValue());
+        MatcherAssert.assertThat(((AuthnRequestType) samlResponse.getSamlObject()).getAssertionConsumerServiceURL().getPath(), is("/employee-acs/a/different/endpoint/for/saml"));
 
         assertSuccessfulLogin(employeeAcsServletPage, bburkeUser, testRealmSAMLPostLoginPage, "principal=bburke");
     }
@@ -874,8 +875,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
               .processSamlResponse(Binding.POST).build()
 
               .execute(r -> {
-                  Assert.assertThat(r, statusCodeIsHC(Response.Status.OK));
-                  Assert.assertThat(r, bodyHC(containsString("urn:oasis:names:tc:SAML:2.0:status:RequestDenied")));  // TODO: revisit - should the HTTP status be 403 too?
+                  MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.OK));
+                  MatcherAssert.assertThat(r, bodyHC(containsString("urn:oasis:names:tc:SAML:2.0:status:RequestDenied")));  // TODO: revisit - should the HTTP status be 403 too?
               });
         } finally {
             salesPostEncServletPage.logout();
@@ -895,8 +896,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
               .processSamlResponse(Binding.POST).build()
 
               .execute(r -> {
-                  Assert.assertThat(r, statusCodeIsHC(Response.Status.OK));
-                  Assert.assertThat(r, bodyHC(containsString("urn:oasis:names:tc:SAML:2.0:status:RequestDenied")));  // TODO: revisit - should the HTTP status be 403 too?
+                  MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.OK));
+                  MatcherAssert.assertThat(r, bodyHC(containsString("urn:oasis:names:tc:SAML:2.0:status:RequestDenied")));  // TODO: revisit - should the HTTP status be 403 too?
               });
         } finally {
             salesPostServletPage.logout();
@@ -953,8 +954,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
 
             UserRepresentation storedUser = u.resource().toRepresentation();
 
-            Assert.assertThat(storedUser, notNullValue());
-            Assert.assertThat("Database seems to be unable to store Unicode for username. Refer to KEYCLOAK-3439 and related issues.", storedUser.getUsername(), equalToIgnoringCase(username));
+            MatcherAssert.assertThat(storedUser, notNullValue());
+            MatcherAssert.assertThat("Database seems to be unable to store Unicode for username. Refer to KEYCLOAK-3439 and related issues.", storedUser.getUsername(), equalToIgnoringCase(username));
 
             assertSuccessfulLogin(salesPostSigServletPage, user, testRealmSAMLPostLoginPage, "principal=" + storedUser.getUsername());
 
@@ -978,8 +979,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
 
             UserRepresentation storedUser = u.resource().toRepresentation();
 
-            Assert.assertThat(storedUser, notNullValue());
-            Assert.assertThat("Database seems to be unable to store Unicode for username. Refer to KEYCLOAK-3439 and related issues.", storedUser.getUsername(), equalToIgnoringCase(username));
+            MatcherAssert.assertThat(storedUser, notNullValue());
+            MatcherAssert.assertThat("Database seems to be unable to store Unicode for username. Refer to KEYCLOAK-3439 and related issues.", storedUser.getUsername(), equalToIgnoringCase(username));
 
             assertSuccessfulLogin(employeeSigServletPage, user, testRealmSAMLRedirectLoginPage, "principal=" + storedUser.getUsername());
 
@@ -1004,14 +1005,14 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
           .login().user(user).build()
           .processSamlResponse(Binding.POST)
             .transformString(s -> {
-                Assert.assertThat(s, containsString(">bburke@redhat.com.additional.domain<"));
+                MatcherAssert.assertThat(s, containsString(">bburke@redhat.com.additional.domain<"));
                 s = s.replaceAll("bburke@redhat.com.additional.domain", "bburke@redhat.com<!-- comment -->.additional.domain");
                 return s;
             })
             .build()
           .executeAndTransform(resp -> EntityUtils.toString(resp.getEntity()));
 
-        Assert.assertThat(resultPage, containsString("principal=bburke@redhat.com.additional.domain"));
+        MatcherAssert.assertThat(resultPage, containsString("principal=bburke@redhat.com.additional.domain"));
     }
 
     @Test
@@ -1025,14 +1026,14 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
           .login().user(user).build()
           .processSamlResponse(Binding.POST)
             .transformString(s -> {
-                Assert.assertThat(s, containsString(">bburke@redhat.com.additional.domain<"));
+                MatcherAssert.assertThat(s, containsString(">bburke@redhat.com.additional.domain<"));
                 s = s.replaceAll("bburke@redhat.com.additional.domain", "bburke@redhat.com");
                 return s;
             })
             .build()
           .executeAndTransform(resp -> EntityUtils.toString(resp.getEntity()));
 
-        Assert.assertThat(resultPage, anyOf(
+        MatcherAssert.assertThat(resultPage, anyOf(
                 containsString("INVALID_SIGNATURE"),
                 containsString("Error 403: SRVE0295E: Error reported: 403") //WAS
         ));
@@ -1109,7 +1110,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
 
         assertCurrentUrlStartsWith(testRealmSAMLPostLoginPage);
         testRealmLoginPage.form().login("bburke@redhat.com", "password");
-        Assert.assertThat(URI.create(driver.getCurrentUrl()).getPath(), endsWith("secured/post"));
+        MatcherAssert.assertThat(URI.create(driver.getCurrentUrl()).getPath(), endsWith("secured/post"));
         waitUntilElement(By.xpath("//body")).text().contains("parameter=hello");
 
         // test that user principal and KeycloakSecurityContext available
@@ -1140,7 +1141,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
 
         samlidpInitiatedLoginPage.form().login(bburkeUser);
         assertCurrentUrlStartsWith(salesPost2ServletPage);
-        Assert.assertThat(URI.create(driver.getCurrentUrl()).getPath(), endsWith("foo"));
+        MatcherAssert.assertThat(URI.create(driver.getCurrentUrl()).getPath(), endsWith("foo"));
         waitUntilElement(By.xpath("//body")).text().contains("principal=bburke");
         salesPost2ServletPage.logout();
         checkLoggedOut(salesPost2ServletPage, testRealmSAMLPostLoginPage);
@@ -1181,8 +1182,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         assertCurrentUrlStartsWith(employeeServletPage);
         waitForPageToLoad();
         String pageSource = driver.getPageSource();
-        Assert.assertThat(pageSource, containsString("Relay state: " + SamlSPFacade.RELAY_STATE));
-        Assert.assertThat(pageSource, not(containsString("SAML response: null")));
+        MatcherAssert.assertThat(pageSource, containsString("Relay state: " + SamlSPFacade.RELAY_STATE));
+        MatcherAssert.assertThat(pageSource, not(containsString("SAML response: null")));
     }
 
     private static String[] parseCommaSeparatedAttributes(String body, String attribute) {
@@ -1435,8 +1436,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
           .navigateTo(employee2ServletPage.getUriBuilder().clone().path("getAttributes").build())
 
           .execute(r -> {
-              Assert.assertThat(r, statusCodeIsHC(Response.Status.OK));
-              Assert.assertThat(r, bodyHC(containsString("boolean-attribute: true")));
+              MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.OK));
+              MatcherAssert.assertThat(r, bodyHC(containsString("boolean-attribute: true")));
           });
     }
 
@@ -1453,7 +1454,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
                 XPathExpression expr = xpath.compile("//*[local-name()='NameID']");
 
                 NodeList nodeList = (NodeList) expr.evaluate(responseDoc, XPathConstants.NODESET);
-                Assert.assertThat(nodeList.getLength(), is(1));
+                MatcherAssert.assertThat(nodeList.getLength(), is(1));
 
                 final Node nameIdNode = nodeList.item(0);
                 nameIdNode.getParentNode().removeChild(nameIdNode);
@@ -1465,8 +1466,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
           .navigateTo(employee2ServletPage.toString())
 
           .execute(r -> {
-              Assert.assertThat(r, statusCodeIsHC(Response.Status.OK));
-              Assert.assertThat(r, bodyHC(containsString("principal=")));
+              MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.OK));
+              MatcherAssert.assertThat(r, bodyHC(containsString("principal=")));
           });
     }
 
@@ -1486,8 +1487,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
           .navigateTo(employee2ServletPage.toString())
 
           .execute(r -> {
-              Assert.assertThat(r, statusCodeIsHC(Response.Status.OK));
-              Assert.assertThat(r, bodyHC(containsString("principal=")));
+              MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.OK));
+              MatcherAssert.assertThat(r, bodyHC(containsString("principal=")));
           });
     }
 
@@ -1513,13 +1514,13 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
             HttpUriRequest post = SamlClient.Binding.POST.createSamlUnsignedResponse(getAppServerSamlEndpoint(salesPostSigEmailServletPage), null, responseDoc);
             response = client.execute(post, context);
             System.out.println(EntityUtils.toString(response.getEntity()));
-            Assert.assertThat(response, statusCodeIsHC(Response.Status.FOUND));
+            MatcherAssert.assertThat(response, statusCodeIsHC(Response.Status.FOUND));
             response.close();
 
             HttpGet get = new HttpGet(salesPostSigEmailServletPage.toString());
             response = client.execute(get);
-            Assert.assertThat(response, statusCodeIsHC(Response.Status.OK));
-            Assert.assertThat(response, bodyHC(containsString("principal=bburke")));
+            MatcherAssert.assertThat(response, statusCodeIsHC(Response.Status.OK));
+            MatcherAssert.assertThat(response, bodyHC(containsString("principal=bburke")));
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         } finally {
@@ -1535,8 +1536,8 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
     public void testDifferentCookieName() {
         assertSuccessfulLogin(differentCookieNameServletPage, bburkeUser, testRealmSAMLPostLoginPage, "principal=bburke");
 
-        Assert.assertThat(driver.manage().getCookieNamed("DIFFERENT_SESSION_ID"), notNullValue());
-        Assert.assertThat(driver.manage().getCookieNamed("JSESSIONID"), nullValue());
+        MatcherAssert.assertThat(driver.manage().getCookieNamed("DIFFERENT_SESSION_ID"), notNullValue());
+        MatcherAssert.assertThat(driver.manage().getCookieNamed("JSESSIONID"), nullValue());
 
         salesPost2ServletPage.logout();
         checkLoggedOut(differentCookieNameServletPage, testRealmSAMLPostLoginPage);
@@ -1607,11 +1608,11 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         SOAPHeaderElement ecpRequestHeader = (SOAPHeaderElement)it.next();
         NodeList idpList = ecpRequestHeader.getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:protocol", "IDPList");
 
-        Assert.assertThat("No IDPList returned from Service Provider", idpList.getLength(), is(1));
+        MatcherAssert.assertThat("No IDPList returned from Service Provider", idpList.getLength(), is(1));
 
         NodeList idpEntries = idpList.item(0).getChildNodes();
 
-        Assert.assertThat("No IDPEntry returned from Service Provider", idpEntries.getLength(), is(1));
+        MatcherAssert.assertThat("No IDPEntry returned from Service Provider", idpEntries.getLength(), is(1));
 
         String singleSignOnService = null;
 
@@ -1623,7 +1624,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
             singleSignOnService = location.getNodeValue();
         }
 
-        Assert.assertThat("Could not obtain SSO Service URL", singleSignOnService, notNullValue());
+        MatcherAssert.assertThat("Could not obtain SSO Service URL", singleSignOnService, notNullValue());
 
         Document authenticationRequest = authnRequestMessage.getSOAPBody().getFirstChild().getOwnerDocument();
         String username = "pedroigor";
@@ -1635,7 +1636,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
                 .post(Entity.entity(DocumentUtil.asString(authenticationRequest), "text/xml"));
 
-        Assert.assertThat(authenticationResponse.getStatus(), is(OK.getStatusCode()));
+        MatcherAssert.assertThat(authenticationResponse.getStatus(), is(OK.getStatusCode()));
 
         SOAPMessage responseMessage  = MessageFactory.newInstance().createMessage(null, new ByteArrayInputStream(authenticationResponse.readEntity(byte[].class)));
 
@@ -1645,19 +1646,19 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
 
         NodeList ecpResponse = responseMessageHeaders.getElementsByTagNameNS(JBossSAMLURIConstants.ECP_PROFILE.get(), JBossSAMLConstants.RESPONSE__ECP.get());
 
-        Assert.assertThat("No ECP Response", ecpResponse.getLength(), is(1));
+        MatcherAssert.assertThat("No ECP Response", ecpResponse.getLength(), is(1));
 
         Node samlResponse = responseMessage.getSOAPBody().getFirstChild();
 
-        Assert.assertThat(samlResponse, notNullValue());
+        MatcherAssert.assertThat(samlResponse, notNullValue());
 
         ResponseType responseType = (ResponseType) SAMLParser.getInstance().parse(samlResponse);
         StatusCodeType statusCode = responseType.getStatus().getStatusCode();
 
-        Assert.assertThat(statusCode.getValue().toString(), is(JBossSAMLURIConstants.STATUS_SUCCESS.get()));
-        Assert.assertThat(responseType.getDestination(), is(ecpSPPage.toString()));
-        Assert.assertThat(responseType.getSignature(), notNullValue());
-        Assert.assertThat(responseType.getAssertions().size(), is(1));
+        MatcherAssert.assertThat(statusCode.getValue().toString(), is(JBossSAMLURIConstants.STATUS_SUCCESS.get()));
+        MatcherAssert.assertThat(responseType.getDestination(), is(ecpSPPage.toString()));
+        MatcherAssert.assertThat(responseType.getSignature(), notNullValue());
+        MatcherAssert.assertThat(responseType.getAssertions().size(), is(1));
 
         SOAPMessage samlResponseRequest = MessageFactory.newInstance().createMessage();
 
@@ -1679,7 +1680,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         }
 
         Response resourceResponse = resourceRequest.get();
-        Assert.assertThat(resourceResponse.readEntity(String.class), containsString("pedroigor"));
+        MatcherAssert.assertThat(resourceResponse.readEntity(String.class), containsString("pedroigor"));
     }
 
     @AuthServerContainerExclude(value = AuthServerContainerExclude.AuthServer.QUARKUS, details =
@@ -1700,11 +1701,11 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
         javax.xml.soap.Node ecpRequestHeader = it.next();
         NodeList idpList = ((SOAPHeaderElement)ecpRequestHeader).getElementsByTagNameNS("urn:oasis:names:tc:SAML:2.0:protocol", "IDPList");
 
-        Assert.assertThat("No IDPList returned from Service Provider", idpList.getLength(), is(1));
+        MatcherAssert.assertThat("No IDPList returned from Service Provider", idpList.getLength(), is(1));
 
         NodeList idpEntries = idpList.item(0).getChildNodes();
 
-        Assert.assertThat("No IDPEntry returned from Service Provider", idpEntries.getLength(), is(1));
+        MatcherAssert.assertThat("No IDPEntry returned from Service Provider", idpEntries.getLength(), is(1));
 
         String singleSignOnService = null;
 
@@ -1716,7 +1717,7 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
             singleSignOnService = location.getNodeValue();
         }
 
-        Assert.assertThat("Could not obtain SSO Service URL", singleSignOnService, notNullValue());
+        MatcherAssert.assertThat("Could not obtain SSO Service URL", singleSignOnService, notNullValue());
 
         Document authenticationRequest = authnRequestMessage.getSOAPBody().getFirstChild().getOwnerDocument();
         String username = "pedroigor";
@@ -1728,17 +1729,17 @@ public class SAMLServletAdapterTest extends AbstractSAMLServletAdapterTest {
                 .header(HttpHeaders.AUTHORIZATION, authHeader)
                 .post(Entity.entity(DocumentUtil.asString(authenticationRequest), "application/soap+xml"));
 
-        Assert.assertThat(authenticationResponse.getStatus(), is(OK.getStatusCode()));
+        MatcherAssert.assertThat(authenticationResponse.getStatus(), is(OK.getStatusCode()));
 
         SOAPMessage responseMessage  = MessageFactory.newInstance().createMessage(null, new ByteArrayInputStream(authenticationResponse.readEntity(byte[].class)));
         Node samlResponse = responseMessage.getSOAPBody().getFirstChild();
 
-        Assert.assertThat(samlResponse, notNullValue());
+        MatcherAssert.assertThat(samlResponse, notNullValue());
 
         StatusResponseType responseType = (StatusResponseType) SAMLParser.getInstance().parse(samlResponse);
         StatusCodeType statusCode = responseType.getStatus().getStatusCode();
 
-        Assert.assertThat(statusCode.getStatusCode().getValue().toString(), is(not(JBossSAMLURIConstants.STATUS_SUCCESS.get())));
+        MatcherAssert.assertThat(statusCode.getStatusCode().getValue().toString(), is(not(JBossSAMLURIConstants.STATUS_SUCCESS.get())));
     }
 
     /**

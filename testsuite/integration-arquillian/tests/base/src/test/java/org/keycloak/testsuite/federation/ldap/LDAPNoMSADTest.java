@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.federation.ldap;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
@@ -180,7 +181,7 @@ public class LDAPNoMSADTest extends AbstractLDAPTest {
         userRep = user.toRepresentation();
 
         // ApacheDS bug causes that attribute, which was added to DN, is lowercased. Works for other LDAPs (RHDS, OpenLDAP)
-        Assert.assertThat("Doe3Changed", equalToIgnoringCase(userRep.getLastName()));
+        MatcherAssert.assertThat("Doe3Changed", equalToIgnoringCase(userRep.getLastName()));
         assertFirstRDNEndsWith(userRep, "johnkeycloak3", "Doe3Changed");
 
         // Remove user

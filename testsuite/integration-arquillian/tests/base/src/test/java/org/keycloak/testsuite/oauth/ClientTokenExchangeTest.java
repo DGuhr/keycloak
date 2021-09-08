@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.oauth;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -325,7 +326,7 @@ public class ClientTokenExchangeTest extends AbstractKeycloakTest {
             Assert.assertNull(exchangedToken.getRealmAccess());
 
             Object impersonatorRaw = exchangedToken.getOtherClaims().get("impersonator");
-            Assert.assertThat(impersonatorRaw, instanceOf(Map.class));
+            MatcherAssert.assertThat(impersonatorRaw, instanceOf(Map.class));
             Map impersonatorClaim = (Map) impersonatorRaw;
 
             Assert.assertEquals(token.getSubject(), impersonatorClaim.get("id"));

@@ -18,6 +18,7 @@
 package org.keycloak.testsuite.crossdc;
 
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.keycloak.OAuth2Constants;
@@ -385,24 +386,24 @@ public class LastSessionRefreshCrossDCTest extends AbstractAdminCrossDCTest {
 
             // Check lastSessionRefresh updated on DC1
             if (expectedUpdatedLsrDc1) {
-                Assert.assertThat(newLsrDc1, Matchers.greaterThan(lsrDc1.get()));
+                MatcherAssert.assertThat(newLsrDc1, Matchers.greaterThan(lsrDc1.get()));
             } else {
                 Assert.assertEquals(newLsrDc1, lsrDc1.get());
             }
 
             // Check lastSessionRefresh updated on DC2
             if (expectedUpdatedLsrDc2) {
-                Assert.assertThat(newLsrDc2, Matchers.greaterThan(lsrDc2.get()));
+                MatcherAssert.assertThat(newLsrDc2, Matchers.greaterThan(lsrDc2.get()));
             } else {
                 Assert.assertEquals(newLsrDc2, lsrDc2.get());
             }
 
             // Check store statistics updated on JDG side
             if (expectedUpdatedRemoteCache) {
-                Assert.assertThat(newSessionStoresDc1, Matchers.greaterThan(sessionStoresDc1.get()));
-                Assert.assertThat(newSessionStoresDc2, Matchers.greaterThan(sessionStoresDc2.get()));
-                Assert.assertThat(newClientSessionStoresDc1, Matchers.greaterThan(clientSessionStoresDc1.get()));
-                Assert.assertThat(newClientSessionStoresDc2, Matchers.greaterThan(clientSessionStoresDc2.get()));
+                MatcherAssert.assertThat(newSessionStoresDc1, Matchers.greaterThan(sessionStoresDc1.get()));
+                MatcherAssert.assertThat(newSessionStoresDc2, Matchers.greaterThan(sessionStoresDc2.get()));
+                MatcherAssert.assertThat(newClientSessionStoresDc1, Matchers.greaterThan(clientSessionStoresDc1.get()));
+                MatcherAssert.assertThat(newClientSessionStoresDc2, Matchers.greaterThan(clientSessionStoresDc2.get()));
             } else {
                 Assert.assertEquals(newSessionStoresDc1, sessionStoresDc1.get());
                 Assert.assertEquals(newSessionStoresDc2, sessionStoresDc2.get());

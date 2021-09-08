@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.admin;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataOutput;
 import org.junit.AfterClass;
@@ -492,10 +493,10 @@ public class PermissionsTest extends AbstractKeycloakTest {
             }
         }, Resource.CLIENT, false, true);
         List<ClientRepresentation> l = clients.get(AdminRoles.QUERY_CLIENTS).realm(REALM_NAME).clients().findAll();
-        Assert.assertThat(l, Matchers.empty());
+        MatcherAssert.assertThat(l, Matchers.empty());
 
         l = clients.get(AdminRoles.VIEW_CLIENTS).realm(REALM_NAME).clients().findAll();
-        Assert.assertThat(l, Matchers.not(Matchers.empty()));
+        MatcherAssert.assertThat(l, Matchers.not(Matchers.empty()));
 
         ClientRepresentation client = l.get(0);
         invoke(new InvocationWithResponse() {

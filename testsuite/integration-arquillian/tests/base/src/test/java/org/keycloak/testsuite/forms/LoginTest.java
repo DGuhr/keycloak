@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.forms;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Assert;
@@ -165,7 +166,7 @@ public class LoginTest extends AbstractTestRealmKeycloakTest {
     public void testBrowserSecurityHeaders() {
         Client client = AdminClientUtil.createResteasyClient();
         Response response = client.target(oauth.getLoginFormUrl()).request().get();
-        Assert.assertThat(response.getStatus(), is(equalTo(200)));
+        MatcherAssert.assertThat(response.getStatus(), is(equalTo(200)));
         for (BrowserSecurityHeaders header : BrowserSecurityHeaders.values()) {
             String headerValue = response.getHeaderString(header.getHeaderName());
             String expectedValue = header.getDefaultValue();
@@ -173,7 +174,7 @@ public class LoginTest extends AbstractTestRealmKeycloakTest {
                 Assert.assertNull(headerValue);
             } else {
                 Assert.assertNotNull(headerValue);
-                Assert.assertThat(headerValue, is(equalTo(expectedValue)));
+                MatcherAssert.assertThat(headerValue, is(equalTo(expectedValue)));
             }
         }
         response.close();
@@ -195,7 +196,7 @@ public class LoginTest extends AbstractTestRealmKeycloakTest {
             Client client = AdminClientUtil.createResteasyClient();
             Response response = client.target(oauth.getLoginFormUrl()).request().get();
             String headerValue = response.getHeaderString(cspReportOnlyHeader);
-            Assert.assertThat(headerValue, is(equalTo(expectedCspReportOnlyValue)));
+            MatcherAssert.assertThat(headerValue, is(equalTo(expectedCspReportOnlyValue)));
             response.close();
             client.close();
         } finally {
@@ -213,8 +214,8 @@ public class LoginTest extends AbstractTestRealmKeycloakTest {
         UriBuilder b = OIDCLoginProtocolService.authUrl(UriBuilder.fromUri(AUTH_SERVER_ROOT));
         Response response = client.target(b.build(oauth.getRealm())).request().post(oauth.getLoginEntityForPOST());
         
-        Assert.assertThat(response.getStatus(), is(equalTo(200)));
-        Assert.assertThat(response, Matchers.body(containsString("Sign in")));
+        MatcherAssert.assertThat(response.getStatus(), is(equalTo(200)));
+        MatcherAssert.assertThat(response, Matchers.body(containsString("Sign in")));
 
         response.close();
         client.close();

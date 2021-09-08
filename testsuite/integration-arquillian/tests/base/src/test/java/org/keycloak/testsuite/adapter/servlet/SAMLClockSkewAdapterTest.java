@@ -20,6 +20,7 @@ package org.keycloak.testsuite.adapter.servlet;
 import java.util.List;
 import org.apache.http.util.EntityUtils;
 import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.container.test.api.Deployer;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.test.api.ArquillianResource;
@@ -92,7 +93,7 @@ public class SAMLClockSkewAdapterTest extends AbstractSAMLServletAdapterTest {
                         return doc;
                     }).build().executeAndTransform(resp -> EntityUtils.toString(resp.getEntity()));
 
-            Assert.assertThat(resultPage, matcher);
+            MatcherAssert.assertThat(resultPage, matcher);
         } finally {
             setAdapterAndServerTimeOffset(0, salesPostClockSkewServletPage.toString());
         }

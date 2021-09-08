@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.util;
 
+import org.hamcrest.MatcherAssert;
 import org.keycloak.dom.saml.v2.SAML2Object;
 import org.keycloak.saml.processing.core.saml.v2.common.SAMLDocumentHolder;
 import org.keycloak.testsuite.client.KeycloakTestingClient;
@@ -128,7 +129,7 @@ public class SamlClientBuilder {
 
     public SamlClientBuilder assertResponse(Matcher<? super CloseableHttpResponse> matcher) {
         steps.add((client, currentURI, currentResponse, context) -> {
-            Assert.assertThat(currentResponse, matcher);
+            MatcherAssert.assertThat(currentResponse, matcher);
             return null;
         });
         return this;
@@ -259,8 +260,8 @@ public class SamlClientBuilder {
         return
           doNotFollowRedirects()
           .addStep((client, currentURI, currentResponse, context) -> {
-            Assert.assertThat(currentResponse, Matchers.statusCodeIsHC(Status.FOUND));
-            Assert.assertThat("Location header not found", currentResponse.getFirstHeader("Location"), notNullValue());
+            MatcherAssert.assertThat(currentResponse, Matchers.statusCodeIsHC(Status.FOUND));
+            MatcherAssert.assertThat("Location header not found", currentResponse.getFirstHeader("Location"), notNullValue());
             return new HttpGet(currentResponse.getFirstHeader("Location").getValue());
           });
     }

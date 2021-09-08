@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.account;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Assert;
@@ -94,7 +95,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.keycloak.testsuite.util.ServerURLs.AUTH_SERVER_SSL_REQUIRED;
 import static org.keycloak.testsuite.util.ServerURLs.getAuthServerContextRoot;
@@ -472,7 +473,7 @@ public class AccountFormServiceTest extends AbstractTestRealmKeycloakTest {
 
      private void assertChangePasswordFails(String currentPassword, String newPassword) {
         changePasswordPage.changePassword(currentPassword, newPassword, newPassword);
-        Assert.assertThat(profilePage.getError(), containsString("Invalid password: must not be equal to any of last"));
+        MatcherAssert.assertThat(profilePage.getError(), containsString("Invalid password: must not be equal to any of last"));
         events.expectAccount(EventType.UPDATE_PASSWORD_ERROR).user(userId).error(Errors.PASSWORD_REJECTED).assertEvent();
     }
 
@@ -1279,7 +1280,7 @@ public class AccountFormServiceTest extends AbstractTestRealmKeycloakTest {
         loginPage.login("realm-admin", "password");
         Assert.assertTrue(applicationsPage.isCurrent());
         Map<String, AccountApplicationsPage.AppEntry> apps = applicationsPage.getApplications();
-        Assert.assertThat(apps.keySet(), hasItems("Admin CLI", "Security Admin Console"));
+        MatcherAssert.assertThat(apps.keySet(), hasItems("Admin CLI", "Security Admin Console"));
         events.clear();
     }
 
@@ -1298,7 +1299,7 @@ public class AccountFormServiceTest extends AbstractTestRealmKeycloakTest {
             applicationsPage.assertCurrent();
 
             Map<String, AccountApplicationsPage.AppEntry> apps = applicationsPage.getApplications();
-            Assert.assertThat(apps.keySet(), containsInAnyOrder(
+            MatcherAssert.assertThat(apps.keySet(), containsInAnyOrder(
               /* "root-url-client", */ "Account", "Account Console", "test-app", "test-app-scope", "third-party", "test-app-authz", "My Named Test App", "Test App Named - ${client_account}", "direct-grant", "custom-audience"));
 
             rsu.add(testRealm().roles().get("user").toRepresentation())
@@ -1306,7 +1307,7 @@ public class AccountFormServiceTest extends AbstractTestRealmKeycloakTest {
 
             driver.navigate().refresh();
             apps = applicationsPage.getApplications();
-            Assert.assertThat(apps.keySet(), containsInAnyOrder(
+            MatcherAssert.assertThat(apps.keySet(), containsInAnyOrder(
               "root-url-client", "Account", "Account Console", "test-app", "test-app-scope", "third-party", "test-app-authz", "My Named Test App", "Test App Named - ${client_account}", "direct-grant", "custom-audience"));
         }
     }
@@ -1325,7 +1326,7 @@ public class AccountFormServiceTest extends AbstractTestRealmKeycloakTest {
             applicationsPage.assertCurrent();
 
             Map<String, AccountApplicationsPage.AppEntry> apps = applicationsPage.getApplications();
-            Assert.assertThat(apps.keySet(), containsInAnyOrder(
+            MatcherAssert.assertThat(apps.keySet(), containsInAnyOrder(
               "root-url-client", "Account", "Account Console", "test-app", "test-app-scope", "third-party", "test-app-authz", "My Named Test App", "Test App Named - ${client_account}", "direct-grant", "custom-audience"));
         }
     }
@@ -1341,16 +1342,16 @@ public class AccountFormServiceTest extends AbstractTestRealmKeycloakTest {
         applicationsPage.assertCurrent();
 
         Map<String, AccountApplicationsPage.AppEntry> apps = applicationsPage.getApplications();
-        Assert.assertThat(apps.keySet(), containsInAnyOrder("root-url-client", "Account", "Account Console", "test-app", "test-app-scope", "third-party", "test-app-authz", "My Named Test App", "Test App Named - ${client_account}", "direct-grant", "custom-audience"));
+        MatcherAssert.assertThat(apps.keySet(), containsInAnyOrder("root-url-client", "Account", "Account Console", "test-app", "test-app-scope", "third-party", "test-app-authz", "My Named Test App", "Test App Named - ${client_account}", "direct-grant", "custom-audience"));
 
         AccountApplicationsPage.AppEntry accountEntry = apps.get("Account");
-        Assert.assertThat(accountEntry.getRolesAvailable(), containsInAnyOrder(
+        MatcherAssert.assertThat(accountEntry.getRolesAvailable(), containsInAnyOrder(
           "Manage account links in Account",
           "Manage account in Account",
           "View profile in Account",
           "Offline access"
         ));
-        Assert.assertThat(accountEntry.getClientScopesGranted(), containsInAnyOrder("Full Access"));
+        MatcherAssert.assertThat(accountEntry.getClientScopesGranted(), containsInAnyOrder("Full Access"));
         Assert.assertEquals(oauth.AUTH_SERVER_ROOT + "/realms/test/account/", accountEntry.getHref());
 
         AccountApplicationsPage.AppEntry testAppEntry = apps.get("test-app");

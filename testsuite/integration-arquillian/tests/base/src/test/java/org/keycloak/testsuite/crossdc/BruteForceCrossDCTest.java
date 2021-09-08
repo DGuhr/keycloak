@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.crossdc;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -217,8 +218,8 @@ public class BruteForceCrossDCTest extends AbstractAdminCrossDCTest {
             log.infof("After concurrent update entry1: dc0User1=%d, dc1user1=%d", dc0user1, dc1user1);
 
             // TODO: The number of failures should be ideally exactly 21 in both DCs. Once we improve cross-dc, then improve this test and rather check for "Assert.assertEquals(dc0user1, 21)" and "Assert.assertEquals(dc1user1, 21)"
-            Assert.assertThat(dc0user1, Matchers.greaterThan(11));
-            Assert.assertThat(dc1user1, Matchers.greaterThan(11));
+            MatcherAssert.assertThat(dc0user1, Matchers.greaterThan(11));
+            MatcherAssert.assertThat(dc1user1, Matchers.greaterThan(11));
         }, 50, 50);
     }
 

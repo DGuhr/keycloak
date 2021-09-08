@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.model;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -289,7 +290,7 @@ public class ConcurrentTransactionsTest extends AbstractTestRealmKeycloakTest {
         }
 
         Assert.assertTrue(currentSession.realms().removeRealm(realm.getId()));
-        Assert.assertThat(currentSession.realms().getRealm(realm.getId()), is(nullValue()));
+        MatcherAssert.assertThat(currentSession.realms().getRealm(realm.getId()), is(nullValue()));
     }
 
     @Override

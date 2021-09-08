@@ -39,6 +39,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.hamcrest.MatcherAssert;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.junit.Assert;
@@ -151,7 +152,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
         CookieStore cookieStore = new BasicCookieStore();
         context.setCookieStore(cookieStore);
         HttpUriRequest request = handleLogin(getPageContent(oauth.getLoginFormUrl(), httpClient, context), userName, password);
-        Assert.assertThat(parseAndCloseResponse(httpClient.execute(request, context)), containsString("<title>AUTH_RESPONSE</title>"));
+        MatcherAssert.assertThat(parseAndCloseResponse(httpClient.execute(request, context)), containsString("<title>AUTH_RESPONSE</title>"));
         return context;
     }
 
@@ -250,8 +251,8 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             oauth1.openLogout();
 
             // Code should be successfully exchanged for the token at max once. In some cases (EG. Cross-DC) it may not be even successfully exchanged
-            Assert.assertThat(codeToTokenSuccessCount.get(), Matchers.lessThanOrEqualTo(1));
-            Assert.assertThat(codeToTokenErrorsCount.get(), Matchers.greaterThanOrEqualTo(DEFAULT_THREADS - 1));
+            MatcherAssert.assertThat(codeToTokenSuccessCount.get(), Matchers.lessThanOrEqualTo(1));
+            MatcherAssert.assertThat(codeToTokenErrorsCount.get(), Matchers.greaterThanOrEqualTo(DEFAULT_THREADS - 1));
 
             log.infof("Iteration %d passed successfully", i);
         }
@@ -391,9 +392,9 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
             final HttpClientContext context = HttpClientContext.create();
             context.setCookieStore(templateContext.getCookieStore());
             String pageContent = getPageContent(oauth1.getLoginFormUrl(), httpClient, context);
-            Assert.assertThat(pageContent, Matchers.containsString("<title>AUTH_RESPONSE</title>"));
-            Assert.assertThat(context.getRedirectLocations(), Matchers.notNullValue());
-            Assert.assertThat(context.getRedirectLocations(), Matchers.not(Matchers.empty()));
+            MatcherAssert.assertThat(pageContent, Matchers.containsString("<title>AUTH_RESPONSE</title>"));
+            MatcherAssert.assertThat(context.getRedirectLocations(), Matchers.notNullValue());
+            MatcherAssert.assertThat(context.getRedirectLocations(), Matchers.not(Matchers.empty()));
             String currentUrl = context.getRedirectLocations().get(0).toString();
 
             Map<String, String> query = getQueryFromUrl(currentUrl);

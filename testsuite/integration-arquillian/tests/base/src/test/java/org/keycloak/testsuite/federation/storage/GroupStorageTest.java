@@ -43,7 +43,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 @AuthServerContainerExclude(AuthServer.REMOTE)
 public class GroupStorageTest extends AbstractTestRealmKeycloakTest {
@@ -214,7 +214,7 @@ public class GroupStorageTest extends AbstractTestRealmKeycloakTest {
 //            StorageId storageId = new StorageId(providerId, "hardcoded-group");
 //            GroupModel hardcoded = session.groups().getGroupById(realm, storageId.getId());
 //            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, not(instanceOf(GroupAdapter.class)));
+//            MatcherAssert.assertThat(hardcoded, not(instanceOf(GroupAdapter.class)));
 //        });
 //    }
 
@@ -223,7 +223,7 @@ public class GroupStorageTest extends AbstractTestRealmKeycloakTest {
 //            RealmModel realm = session.realms().getRealmByName("test");
 //            RoleModel hardcoded = realm.getRole("hardcoded-role");
 //            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, instanceOf(RoleAdapter.class));
+//            MatcherAssert.assertThat(hardcoded, instanceOf(RoleAdapter.class));
 //        });
 //    }
 

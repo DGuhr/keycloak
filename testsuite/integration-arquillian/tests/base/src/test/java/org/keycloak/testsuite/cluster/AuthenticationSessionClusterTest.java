@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.cluster;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.infinispan.Cache;
 import org.jboss.arquillian.graphene.page.Page;
@@ -94,7 +95,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
             driver.navigate().to(testAppLoginNode1URL);
             String authSessionCookie = AuthenticationSessionFailoverClusterTest.getAuthSessionCookieValue(driver);
 
-            Assert.assertThat(authSessionCookie.length(), Matchers.greaterThan(36));
+            MatcherAssert.assertThat(authSessionCookie.length(), Matchers.greaterThan(36));
             String route = authSessionCookie.substring(37);
             visitedRoutes.add(route);
 
@@ -102,7 +103,7 @@ public class AuthenticationSessionClusterTest extends AbstractClusterTest {
             driver.manage().deleteAllCookies();
         }
 
-        Assert.assertThat(visitedRoutes, Matchers.containsInAnyOrder(Matchers.startsWith("node1"), Matchers.startsWith("node2")));
+        MatcherAssert.assertThat(visitedRoutes, Matchers.containsInAnyOrder(Matchers.startsWith("node1"), Matchers.startsWith("node2")));
     }
 
 

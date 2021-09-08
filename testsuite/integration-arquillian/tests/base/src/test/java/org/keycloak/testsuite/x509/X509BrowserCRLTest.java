@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.x509;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Assert;
 import org.junit.Before;
@@ -204,7 +205,7 @@ public class X509BrowserCRLTest extends AbstractX509AuthenticationTest {
         // Verify there is an error message
         Assert.assertNotNull(loginPage.getError());
 
-        Assert.assertThat(loginPage.getError(), containsString(expectedError));
+        MatcherAssert.assertThat(loginPage.getError(), containsString(expectedError));
 
         // Continue with form based login
         loginPage.login("test-user@localhost", "password");

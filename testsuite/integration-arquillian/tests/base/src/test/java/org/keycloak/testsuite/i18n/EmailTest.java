@@ -24,6 +24,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.Arrays;
+
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -139,11 +141,11 @@ public class EmailTest extends AbstractI18NTest {
         WaitUtils.waitForPageToLoad();
         
         Assert.assertTrue("Expected to be on InfoPage, but it was on " + DroneUtils.getCurrentDriver().getTitle(), infoPage.isCurrent());
-        Assert.assertThat(infoPage.getLanguageDropdownText(), is(equalTo("English")));
+        MatcherAssert.assertThat(infoPage.getLanguageDropdownText(), is(equalTo("English")));
         
         infoPage.openLanguage("Deutsch");
 
-        Assert.assertThat(DroneUtils.getCurrentDriver().getPageSource(), containsString("Passwort aktualisieren"));
+        MatcherAssert.assertThat(DroneUtils.getCurrentDriver().getPageSource(), containsString("Passwort aktualisieren"));
         
         infoPage.clickToContinueDe();
         
@@ -152,6 +154,6 @@ public class EmailTest extends AbstractI18NTest {
         WaitUtils.waitForPageToLoad();
         
         Assert.assertTrue("Expected to be on InfoPage, but it was on " + DroneUtils.getCurrentDriver().getTitle(), infoPage.isCurrent());
-        Assert.assertThat(infoPage.getInfo(), containsString("Your account has been updated."));
+        MatcherAssert.assertThat(infoPage.getInfo(), containsString("Your account has been updated."));
     }
 }

@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.admin.authentication;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.authentication.AuthenticationFlow;
@@ -101,7 +102,7 @@ public class ExecutionTest extends AbstractAuthenticationTest {
 
         AuthenticatorConfigRepresentation updated = authMgmtResource.getAuthenticatorConfig(authConfigRep.getId());
 
-        Assert.assertThat(updated.getConfig().values(), hasItems("test-updated", "skip"));
+        MatcherAssert.assertThat(updated.getConfig().values(), hasItems("test-updated", "skip"));
     }
 
     @Test

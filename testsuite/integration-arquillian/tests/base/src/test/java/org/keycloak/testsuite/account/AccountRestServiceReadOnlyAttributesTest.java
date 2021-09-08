@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import javax.ws.rs.BadRequestException;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -103,7 +104,7 @@ public class AccountRestServiceReadOnlyAttributesTest extends AbstractRestServic
     private void testAccountUpdateAttributeExpectFailure(String attrName, boolean deniedForAdminAsWell) throws IOException {
         // Attribute not yet supposed to be on the user
         UserRepresentation user = SimpleHttp.doGet(getAccountUrl(null), httpClient).auth(tokenUtil.getToken()).asJson(UserRepresentation.class);
-        Assert.assertThat(user.getAttributes().keySet(), not(contains(attrName)));
+        MatcherAssert.assertThat(user.getAttributes().keySet(), not(contains(attrName)));
 
         // Assert not possible to add the attribute to the user
         user.singleAttribute(attrName, "foo");
@@ -151,7 +152,7 @@ public class AccountRestServiceReadOnlyAttributesTest extends AbstractRestServic
     private void testAccountUpdateAttributeExpectSuccess(String attrName) throws IOException {
         // Attribute not yet supposed to be on the user
         UserRepresentation user = SimpleHttp.doGet(getAccountUrl(null), httpClient).auth(tokenUtil.getToken()).asJson(UserRepresentation.class);
-        Assert.assertThat(user.getAttributes().keySet(), not(contains(attrName)));
+        MatcherAssert.assertThat(user.getAttributes().keySet(), not(contains(attrName)));
 
         // Assert not possible to add the attribute to the user
         user.singleAttribute(attrName, "foo");

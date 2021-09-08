@@ -15,6 +15,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpCoreContext;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Assert;
@@ -92,7 +93,7 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         // check cookie's path, for some reason IE adds extra slash to the beginning of the path
         cookies.stream()
                 .filter(cookie -> KEYCLOAK_COOKIE_NAMES.contains(cookie.getName()))
-                .forEach(cookie -> Assert.assertThat(cookie.getPath(), Matchers.endsWith("/auth/realms/foo/")));
+                .forEach(cookie -> MatcherAssert.assertThat(cookie.getPath(), Matchers.endsWith("/auth/realms/foo/")));
 
         // now navigate to realm which name overlaps the first realm and delete cookies for that realm (foobar)
         URLUtils.navigateToUri(OAuthClient.AUTH_SERVER_ROOT + "/realms/foobar/account");
@@ -111,7 +112,7 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         // check cookie's path, for some reason IE adds extra slash to the beginning of the path
         cookies.stream()
                 .filter(cookie -> KEYCLOAK_COOKIE_NAMES.contains(cookie.getName()))
-                .forEach(cookie -> Assert.assertThat(cookie.getPath(), Matchers.endsWith("/auth/realms/foobar/")));
+                .forEach(cookie -> MatcherAssert.assertThat(cookie.getPath(), Matchers.endsWith("/auth/realms/foobar/")));
 
         // lets back to "/realms/foo/account" to test the cookies for "foo" realm are still there and haven't been (correctly) sent to "foobar"
         URLUtils.navigateToUri(OAuthClient.AUTH_SERVER_ROOT + "/realms/foo/account");
@@ -120,7 +121,7 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         Assert.assertTrue("There should be cookies sent!", cookies.size() > 0);
         cookies.stream()
                 .filter(cookie -> KEYCLOAK_COOKIE_NAMES.contains(cookie.getName()))
-                .forEach(cookie -> Assert.assertThat(cookie.getPath(), Matchers.endsWith("/auth/realms/foo/")));
+                .forEach(cookie -> MatcherAssert.assertThat(cookie.getPath(), Matchers.endsWith("/auth/realms/foo/")));
     }
 
     @Test
@@ -139,23 +140,23 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         CookieStore cookieStore = getCorrectCookies(requestURI);
         cookieStore.addCookie(wrongCookie);
 
-        Assert.assertThat(cookieStore.getCookies(), Matchers.hasSize(3));
+        MatcherAssert.assertThat(cookieStore.getCookies(), Matchers.hasSize(3));
 
         login(requestURI, cookieStore);
 
         // old cookie has been removed
         // now we have AUTH_SESSION_ID, KEYCLOAK_IDENTITY, KEYCLOAK_SESSION
-        Assert.assertThat(cookieStore.getCookies().stream().map(org.apache.http.cookie.Cookie::getName).collect(Collectors.toList()), 
+        MatcherAssert.assertThat(cookieStore.getCookies().stream().map(org.apache.http.cookie.Cookie::getName).collect(Collectors.toList()), 
                 Matchers.hasItems("AUTH_SESSION_ID", "KEYCLOAK_IDENTITY", "KEYCLOAK_SESSION"));
 
         // does each cookie's path end with "/"
-        cookieStore.getCookies().stream().filter(c -> !"OAuth_Token_Request_State".equals(c.getName())).map(org.apache.http.cookie.Cookie::getPath).forEach(path ->Assert.assertThat(path, Matchers.endsWith("/")));
+        cookieStore.getCookies().stream().filter(c -> !"OAuth_Token_Request_State".equals(c.getName())).map(org.apache.http.cookie.Cookie::getPath).forEach(path ->MatcherAssert.assertThat(path, Matchers.endsWith("/")));
 
         // KEYCLOAK_SESSION should end by AUTH_SESSION_ID value
         String authSessionId = cookieStore.getCookies().stream().filter(c -> "AUTH_SESSION_ID".equals(c.getName())).findFirst().get().getValue();
         String KCSessionId = cookieStore.getCookies().stream().filter(c -> "KEYCLOAK_SESSION".equals(c.getName())).findFirst().get().getValue();
         String KCSessionSuffix = KCSessionId.split("/")[2];
-        Assert.assertThat(authSessionId, Matchers.containsString(KCSessionSuffix));
+        MatcherAssert.assertThat(authSessionId, Matchers.containsString(KCSessionSuffix));
     }
 
     @Test
@@ -171,7 +172,7 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         // add old cookie with wrong path
         driver.manage().addCookie(wrongCookie);
         Set<Cookie> cookies = driver.manage().getCookies();
-        Assert.assertThat(cookies, Matchers.hasSize(1));
+        MatcherAssert.assertThat(cookies, Matchers.hasSize(1));
 
         oauth.realm("foo").redirectUri(OAuthClient.AUTH_SERVER_ROOT + "/realms/foo/account").clientId("account").openLoginForm();
 
@@ -181,16 +182,16 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         cookies = driver.manage().getCookies().stream()
                 .filter(cookie -> KEYCLOAK_COOKIE_NAMES.contains(cookie.getName()))
                 .collect(Collectors.toSet());
-        Assert.assertThat(cookies, Matchers.hasSize(3));
+        MatcherAssert.assertThat(cookies, Matchers.hasSize(3));
 
         // does each cookie's path end with "/"
-        cookies.stream().map(Cookie::getPath).forEach(path -> Assert.assertThat(path, Matchers.endsWith("/")));
+        cookies.stream().map(Cookie::getPath).forEach(path -> MatcherAssert.assertThat(path, Matchers.endsWith("/")));
 
         // KEYCLOAK_SESSION should end by AUTH_SESSION_ID value
         String authSessionId = cookies.stream().filter(c -> "AUTH_SESSION_ID".equals(c.getName())).findFirst().get().getValue();
         String KCSessionId = cookies.stream().filter(c -> "KEYCLOAK_SESSION".equals(c.getName())).findFirst().get().getValue();
         String KCSessionSuffix = KCSessionId.split("/")[2];
-        Assert.assertThat(authSessionId, Matchers.containsString(KCSessionSuffix));
+        MatcherAssert.assertThat(authSessionId, Matchers.containsString(KCSessionSuffix));
     }
 
     @Test
@@ -209,23 +210,23 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         CookieStore cookieStore = getCorrectCookies(requestURI);
         cookieStore.addCookie(wrongCookie);
 
-        Assert.assertThat(cookieStore.getCookies(), Matchers.hasSize(3));
+        MatcherAssert.assertThat(cookieStore.getCookies(), Matchers.hasSize(3));
 
         login(requestURI, cookieStore);
 
         // old cookie has been removed
         // now we have AUTH_SESSION_ID, KEYCLOAK_IDENTITY, KEYCLOAK_SESSION, OAuth_Token_Request_State
-        Assert.assertThat(cookieStore.getCookies().stream().map(org.apache.http.cookie.Cookie::getName).collect(Collectors.toList()), 
+        MatcherAssert.assertThat(cookieStore.getCookies().stream().map(org.apache.http.cookie.Cookie::getName).collect(Collectors.toList()), 
                 Matchers.hasItems("AUTH_SESSION_ID", "KEYCLOAK_IDENTITY", "KEYCLOAK_SESSION"));
 
         // does each cookie's path end with "/"
-        cookieStore.getCookies().stream().filter(c -> !"OAuth_Token_Request_State".equals(c.getName())).map(org.apache.http.cookie.Cookie::getPath).forEach(path ->Assert.assertThat(path, Matchers.endsWith("/")));
+        cookieStore.getCookies().stream().filter(c -> !"OAuth_Token_Request_State".equals(c.getName())).map(org.apache.http.cookie.Cookie::getPath).forEach(path ->MatcherAssert.assertThat(path, Matchers.endsWith("/")));
 
         // KEYCLOAK_SESSION should end by AUTH_SESSION_ID value
         String authSessionId = cookieStore.getCookies().stream().filter(c -> "AUTH_SESSION_ID".equals(c.getName())).findFirst().get().getValue();
         String KCSessionId = cookieStore.getCookies().stream().filter(c -> "KEYCLOAK_SESSION".equals(c.getName())).findFirst().get().getValue();
         String KCSessionSuffix = KCSessionId.split("/")[2];
-        Assert.assertThat(authSessionId, Matchers.containsString(KCSessionSuffix));
+        MatcherAssert.assertThat(authSessionId, Matchers.containsString(KCSessionSuffix));
     }
 
     /**
@@ -316,7 +317,7 @@ public class CookiesPathTest extends AbstractKeycloakTest {
         post.setEntity(new UrlEncodedFormEntity(params));
 
         try (CloseableHttpResponse response = sendRequest(post, cookieStore, httpContext)) {
-            Assert.assertThat("Expected successful login.", response.getStatusLine().getStatusCode(), is(equalTo(200)));
+            MatcherAssert.assertThat("Expected successful login.", response.getStatusLine().getStatusCode(), is(equalTo(200)));
         }
     }
 }

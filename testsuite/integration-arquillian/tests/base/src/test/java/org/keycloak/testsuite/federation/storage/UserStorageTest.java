@@ -1,6 +1,7 @@
 package org.keycloak.testsuite.federation.storage;
 
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.After;
 import org.junit.Assert;
@@ -72,7 +73,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.keycloak.models.UserModel.RequiredAction.UPDATE_PROFILE;
@@ -479,9 +480,9 @@ public class UserStorageTest extends AbstractAuthTest {
 
     @Test
     public void testQueryExactMatch() {
-        Assert.assertThat(testRealmResource().users().search("a", true), hasSize(0));
-        Assert.assertThat(testRealmResource().users().search("apollo", true), hasSize(1));
-        Assert.assertThat(testRealmResource().users().search("tbrady", true), hasSize(1));
+        MatcherAssert.assertThat(testRealmResource().users().search("a", true), hasSize(0));
+        MatcherAssert.assertThat(testRealmResource().users().search("apollo", true), hasSize(1));
+        MatcherAssert.assertThat(testRealmResource().users().search("tbrady", true), hasSize(1));
     }
 
     private void setDailyEvictionTime(int hour, int minutes) {

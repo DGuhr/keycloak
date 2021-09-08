@@ -1,6 +1,7 @@
 package org.keycloak.testsuite.cli.admin;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.client.admin.cli.config.FileConfigHandler;
@@ -70,7 +71,7 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             List<ObjectNode> roles = loadJson(exe.stdout(), LIST_OF_JSON);
-            Assert.assertThat("expected three realm roles available", roles.size(), equalTo(3));
+            MatcherAssert.assertThat("expected three realm roles available", roles.size(), equalTo(3));
 
             // create realm role
             exe = execute("create roles --config '" + configFile.getName() + "' -s name=testrole -s 'description=Test role' -o");
@@ -85,7 +86,7 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             roles = loadJson(exe.stdout(), LIST_OF_JSON);
-            Assert.assertThat("expected four realm roles available", roles.size(), equalTo(4));
+            MatcherAssert.assertThat("expected four realm roles available", roles.size(), equalTo(4));
 
             // create client
             exe = execute("create clients --config '" + configFile.getName() + "' -s clientId=testclient -i");
@@ -105,7 +106,7 @@ public class KcAdmSessionTest extends AbstractAdmCliTest {
 
             assertExitCodeAndStdErrSize(exe, 0, 0);
             roles = loadJson(exe.stdout(), LIST_OF_JSON);
-            Assert.assertThat("expected one role", roles.size(), equalTo(1));
+            MatcherAssert.assertThat("expected one role", roles.size(), equalTo(1));
             Assert.assertEquals("clientrole", roles.get(0).get("name").asText());
 
             // add created role to user - we are realm admin so we can add role to ourself

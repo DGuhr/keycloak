@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.keycloak.common.util.MultivaluedHashMap;
@@ -219,7 +219,7 @@ public class RoleStorageTest extends AbstractTestRealmKeycloakTest {
 //            RealmModel realm = session.realms().getRealmByName("test");
 //            RoleModel hardcoded = realm.getRole("hardcoded-role");
 //            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, not(instanceOf(RoleAdapter.class)));
+//            MatcherAssert.assertThat(hardcoded, not(instanceOf(RoleAdapter.class)));
 //        });
 //    }
 //
@@ -228,7 +228,7 @@ public class RoleStorageTest extends AbstractTestRealmKeycloakTest {
 //            RealmModel realm = session.realms().getRealmByName("test");
 //            RoleModel hardcoded = realm.getRole("hardcoded-role");
 //            Assert.assertNotNull(hardcoded);
-//            Assert.assertThat(hardcoded, instanceOf(RoleAdapter.class));
+//            MatcherAssert.assertThat(hardcoded, instanceOf(RoleAdapter.class));
 //        });
 //    }
 //

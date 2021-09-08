@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -87,7 +89,7 @@ public class TextFileCheckerTest {
     public void assertCheckedOutputIs(String... expectedOutput) throws IOException {
         List<String> target = new LinkedList<>();
         tfc.checkFiles(false, collector(target));
-        Assert.assertThat(target,
+        MatcherAssert.assertThat(target,
           expectedOutput == null || expectedOutput.length == 0
             ? Matchers.empty()
             : Matchers.contains(expectedOutput));

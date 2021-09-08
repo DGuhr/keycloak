@@ -17,6 +17,7 @@
 
 package org.keycloak.testsuite.admin;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
@@ -110,7 +111,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.keycloak.testsuite.Assert.assertNames;
@@ -1253,7 +1254,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
         proceedPage.clickProceedLink();
         passwordUpdatePage.assertCurrent();
 
@@ -1313,7 +1314,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
         proceedPage.clickProceedLink();
         passwordUpdatePage.assertCurrent();
 
@@ -1353,7 +1354,7 @@ public class UserTest extends AbstractAdminTest {
             driver.navigate().to(link);
 
             proceedPage.assertCurrent();
-            Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+            MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
             proceedPage.clickProceedLink();
             passwordUpdatePage.assertCurrent();
 
@@ -1399,7 +1400,7 @@ public class UserTest extends AbstractAdminTest {
             driver.navigate().to(link);
 
             proceedPage.assertCurrent();
-            Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+            MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
             proceedPage.clickProceedLink();
             passwordUpdatePage.assertCurrent();
 
@@ -1441,7 +1442,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
         proceedPage.clickProceedLink();
         passwordUpdatePage.assertCurrent();
 
@@ -1451,7 +1452,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
         proceedPage.clickProceedLink();
         passwordUpdatePage.assertCurrent();
 
@@ -1555,7 +1556,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
         proceedPage.clickProceedLink();
         passwordUpdatePage.assertCurrent();
 
@@ -1619,7 +1620,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
         proceedPage.clickProceedLink();
         passwordUpdatePage.assertCurrent();
 
@@ -1704,7 +1705,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Update Password"));
         proceedPage.clickProceedLink();
         passwordUpdatePage.assertCurrent();
 
@@ -1779,7 +1780,7 @@ public class UserTest extends AbstractAdminTest {
         driver.navigate().to(link);
 
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Verify Email"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Verify Email"));
         proceedPage.clickProceedLink();
         Assert.assertEquals("Your account has been updated.", infoPage.getInfo());
 
@@ -1787,7 +1788,7 @@ public class UserTest extends AbstractAdminTest {
 
         driver.navigate().to(link); // It should be possible to use the same action token multiple times
         proceedPage.assertCurrent();
-        Assert.assertThat(proceedPage.getInfo(), Matchers.containsString("Verify Email"));
+        MatcherAssert.assertThat(proceedPage.getInfo(), Matchers.containsString("Verify Email"));
         proceedPage.clickProceedLink();
         Assert.assertEquals("Your account has been updated.", infoPage.getInfo());
     }

@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.cli.admin;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
 import org.keycloak.client.admin.cli.config.FileConfigHandler;
@@ -64,7 +65,7 @@ public class KcAdmUpdateTest extends AbstractAdmCliTest {
                 assertExitCodeAndStdErrSize(exe, 0, 0);
             }
 
-            Assert.assertThat(realmResource.identityProviders().get("idpAlias").toRepresentation().getDisplayName(), is(equalTo("SAML_UPDATED")));
+            MatcherAssert.assertThat(realmResource.identityProviders().get("idpAlias").toRepresentation().getDisplayName(), is(equalTo("SAML_UPDATED")));
         }
     }
 

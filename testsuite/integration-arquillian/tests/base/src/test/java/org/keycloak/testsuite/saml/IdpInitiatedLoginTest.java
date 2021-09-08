@@ -18,6 +18,8 @@ package org.keycloak.testsuite.saml;
 
 import java.io.Closeable;
 import java.io.IOException;
+
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -45,7 +47,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
 import org.keycloak.testsuite.updaters.ClientAttributeUpdater;
 import org.keycloak.testsuite.updaters.IdentityProviderCreator;
@@ -180,8 +182,8 @@ public class IdpInitiatedLoginTest extends AbstractSamlTest {
         new SamlClientBuilder()
                 .idpInitiatedLogin(getAuthServerSamlEndpoint(REALM_NAME), "sales-post").build()
                 .execute(r -> {
-                    Assert.assertThat(r, statusCodeIsHC(Response.Status.BAD_REQUEST));
-                    Assert.assertThat(r, bodyHC(containsString("Wrong client protocol.")));
+                    MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.BAD_REQUEST));
+                    MatcherAssert.assertThat(r, bodyHC(containsString("Wrong client protocol.")));
                 });
 
 
@@ -195,8 +197,8 @@ public class IdpInitiatedLoginTest extends AbstractSamlTest {
                 .idpInitiatedLogin(getAuthServerSamlEndpoint(REALM_NAME), "sales-post").build()
                 .login().user(bburkeUser).build()
                 .execute(r -> {
-                    Assert.assertThat(r, statusCodeIsHC(Response.Status.OK));
-                    Assert.assertThat(r, bodyHC(allOf(
+                    MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.OK));
+                    MatcherAssert.assertThat(r, bodyHC(allOf(
                             containsString("Redirecting, please wait."),
                             containsString("<input type=\"hidden\" name=\"SAMLResponse\""), 
                             containsString("<h1 id=\"kc-page-title\">")
@@ -217,8 +219,8 @@ public class IdpInitiatedLoginTest extends AbstractSamlTest {
                 .idpInitiatedLogin(getAuthServerSamlEndpoint(REALM_NAME), "sales-post").build()
                 .login().idp("saml-idp").build()
                 .execute(r -> {
-                    Assert.assertThat(r, statusCodeIsHC(Response.Status.OK));
-                    Assert.assertThat(r, bodyHC(allOf(
+                    MatcherAssert.assertThat(r, statusCodeIsHC(Response.Status.OK));
+                    MatcherAssert.assertThat(r, bodyHC(allOf(
                             containsString("Redirecting, please wait."),
                             containsString("<input type=\"hidden\" name=\"SAMLRequest\""), 
                             containsString("<h1 id=\"kc-page-title\">")

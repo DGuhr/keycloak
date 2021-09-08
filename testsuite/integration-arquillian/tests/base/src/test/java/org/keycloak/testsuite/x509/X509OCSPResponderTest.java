@@ -19,6 +19,7 @@
 package org.keycloak.testsuite.x509;
 
 import com.google.common.base.Charsets;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.After;
 import org.junit.Assert;
@@ -89,7 +90,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatusCode());
         assertEquals("invalid_request", response.getError());
 
-        Assert.assertThat(response.getErrorDescription(), containsString("Certificate's been revoked."));
+        MatcherAssert.assertThat(response.getErrorDescription(), containsString("Certificate's been revoked."));
     }
 
     @Test
@@ -119,7 +120,7 @@ public class X509OCSPResponderTest extends AbstractX509AuthenticationTest {
             assertEquals("invalid_request", response.getError());
 
             // the ocsp signer cert is issued by the same CA but no OCSP-Signing extension so error
-            Assert.assertThat(response.getErrorDescription(), containsString("Responder's certificate not valid for signing OCSP responses"));
+            MatcherAssert.assertThat(response.getErrorDescription(), containsString("Responder's certificate not valid for signing OCSP responses"));
         } finally {
             oauth.httpClient(previous);
         }

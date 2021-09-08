@@ -19,6 +19,7 @@ package org.keycloak.testsuite.admin;
 
 import java.util.List;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -113,7 +114,7 @@ public class UserFederationLdapConnectionTest extends AbstractAdminTest {
             "false", null, "false", LDAPConstants.AUTH_TYPE_SIMPLE);
 
         List<LDAPCapabilityRepresentation> ldapCapabilities = realm.ldapServerCapabilities(config);
-        Assert.assertThat(ldapCapabilities, Matchers.hasItem(new LDAPCapabilityRepresentation(PasswordModifyRequest.PASSWORD_MODIFY_OID, LDAPCapabilityRepresentation.CapabilityType.EXTENSION)));
+        MatcherAssert.assertThat(ldapCapabilities, Matchers.hasItem(new LDAPCapabilityRepresentation(PasswordModifyRequest.PASSWORD_MODIFY_OID, LDAPCapabilityRepresentation.CapabilityType.EXTENSION)));
 
         // Query the rootDSE failure
         try {

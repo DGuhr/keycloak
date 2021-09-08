@@ -6,6 +6,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class SamlClientTest extends AbstractSamlTest {
             CloseableHttpResponse response = sendPost(post, client);
             Assert.assertEquals(response.getStatusLine().getStatusCode(), 400);
             String s = IOUtils.toString(response.getEntity().getContent(), "UTF-8");
-            Assert.assertThat(s, Matchers.containsString("Wrong client protocol."));
+            MatcherAssert.assertThat(s, Matchers.containsString("Wrong client protocol."));
 
             response.close();
         }

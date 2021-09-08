@@ -18,10 +18,8 @@
 package org.keycloak.testsuite.util;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
+import org.hamcrest.*;
 import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
 import org.keycloak.common.util.ObjectUtil;
@@ -188,7 +186,7 @@ public class AssertAdminEvents implements TestRule {
 
         public AdminEventRepresentation assertEvent(AdminEventRepresentation actual) {
             Assert.assertEquals(expected.getRealmId(), actual.getRealmId());
-            Assert.assertThat(actual.getResourcePath(), resourcePath);
+            MatcherAssert.assertThat(actual.getResourcePath(), resourcePath);
             Assert.assertEquals(expected.getResourceType(), actual.getResourceType());
             Assert.assertEquals(expected.getOperationType(), actual.getOperationType());
 

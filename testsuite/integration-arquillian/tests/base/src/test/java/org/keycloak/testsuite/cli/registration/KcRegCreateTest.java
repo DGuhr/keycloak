@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.cli.registration;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -293,7 +294,7 @@ public class KcRegCreateTest extends AbstractRegCliTest {
 
                 Assert.assertNotNull("clientId", oidcClient.getClientId());
                 Assert.assertEquals("redirect_uris", Arrays.asList("http://localhost:8980/myapp5/*"), oidcClient.getRedirectUris());
-                Assert.assertThat("grant_types", oidcClient.getGrantTypes(), Matchers.containsInAnyOrder("authorization_code", "client_credentials", "refresh_token", OAuth2Constants.UMA_GRANT_TYPE));
+                MatcherAssert.assertThat("grant_types", oidcClient.getGrantTypes(), Matchers.containsInAnyOrder("authorization_code", "client_credentials", "refresh_token", OAuth2Constants.UMA_GRANT_TYPE));
                 Assert.assertEquals("response_types", Arrays.asList("code", "none"), oidcClient.getResponseTypes());
                 Assert.assertEquals("client_name", "My Reg Authz", oidcClient.getClientName());
                 Assert.assertEquals("client_uri", "http://localhost:8980/myapp5", oidcClient.getClientUri());

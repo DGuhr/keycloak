@@ -20,7 +20,7 @@ package org.keycloak.models.map.user;
 import org.junit.Before;
 import org.junit.Test;
 import org.hamcrest.Matchers;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import org.keycloak.credential.CredentialModel;
 
 import java.util.List;

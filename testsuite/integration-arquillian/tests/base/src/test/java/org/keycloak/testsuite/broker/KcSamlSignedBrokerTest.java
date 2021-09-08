@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.broker;
 
+import org.hamcrest.MatcherAssert;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
 import org.keycloak.crypto.Algorithm;
 import org.keycloak.dom.saml.v2.protocol.AuthnRequestType;
@@ -51,7 +52,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.keycloak.testsuite.broker.BrokerTestConstants.*;
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.util.Matchers.bodyHC;
@@ -65,10 +66,10 @@ public class KcSamlSignedBrokerTest extends AbstractBrokerTest {
 
     public void withSignedEncryptedAssertions(Runnable testBody, boolean signedDocument, boolean signedAssertion, boolean encryptedAssertion) throws Exception {
         String providerCert = KeyUtils.getActiveSigningKey(adminClient.realm(bc.providerRealmName()).keys().getKeyMetadata(), Algorithm.RS256).getCertificate();
-        Assert.assertThat(providerCert, Matchers.notNullValue());
+        MatcherAssert.assertThat(providerCert, Matchers.notNullValue());
 
         String consumerCert = KeyUtils.getActiveSigningKey(adminClient.realm(bc.consumerRealmName()).keys().getKeyMetadata(), Algorithm.RS256).getCertificate();
-        Assert.assertThat(consumerCert, Matchers.notNullValue());
+        MatcherAssert.assertThat(consumerCert, Matchers.notNullValue());
 
         try (Closeable idpUpdater = new IdentityProviderAttributeUpdater(identityProviderResource)
             .setAttribute(SAMLIdentityProviderConfig.VALIDATE_SIGNATURE, Boolean.toString(signedAssertion || signedDocument))
@@ -226,8 +227,8 @@ public class KcSamlSignedBrokerTest extends AbstractBrokerTest {
 
           .getSamlResponse(Binding.POST);       // Response from consumer IdP
 
-        Assert.assertThat(samlResponse, Matchers.notNullValue());
-        Assert.assertThat(samlResponse.getSamlObject(), isSamlResponse(JBossSAMLURIConstants.STATUS_SUCCESS));
+        MatcherAssert.assertThat(samlResponse, Matchers.notNullValue());
+        MatcherAssert.assertThat(samlResponse.getSamlObject(), isSamlResponse(JBossSAMLURIConstants.STATUS_SUCCESS));
     }
 
     @Test
@@ -272,7 +273,7 @@ public class KcSamlSignedBrokerTest extends AbstractBrokerTest {
             List<ClientRepresentation> clientRepresentationList = super.createProviderClients();
 
             String consumerCert = KeyUtils.getActiveSigningKey(adminClient.realm(consumerRealmName()).keys().getKeyMetadata(), Algorithm.RS256).getCertificate();
-            Assert.assertThat(consumerCert, Matchers.notNullValue());
+            MatcherAssert.assertThat(consumerCert, Matchers.notNullValue());
 
             for (ClientRepresentation client : clientRepresentationList) {
                 client.setClientAuthenticatorType("client-secret");
@@ -299,7 +300,7 @@ public class KcSamlSignedBrokerTest extends AbstractBrokerTest {
             IdentityProviderRepresentation result = super.setUpIdentityProvider(syncMode);
 
             String providerCert = KeyUtils.getActiveSigningKey(adminClient.realm(providerRealmName()).keys().getKeyMetadata(), Algorithm.RS256).getCertificate();
-            Assert.assertThat(providerCert, Matchers.notNullValue());
+            MatcherAssert.assertThat(providerCert, Matchers.notNullValue());
 
             Map<String, String> config = result.getConfig();
 
@@ -453,10 +454,10 @@ public class KcSamlSignedBrokerTest extends AbstractBrokerTest {
         // Verifies that an AuthnRequest contains the KeyInfo/X509Data element when
         // client AuthnRequest signature is requested
         String providerCert = KeyUtils.getActiveSigningKey(adminClient.realm(bc.providerRealmName()).keys().getKeyMetadata(), Algorithm.RS256).getCertificate();
-        Assert.assertThat(providerCert, Matchers.notNullValue());
+        MatcherAssert.assertThat(providerCert, Matchers.notNullValue());
 
         String consumerCert = KeyUtils.getActiveSigningKey(adminClient.realm(bc.consumerRealmName()).keys().getKeyMetadata(), Algorithm.RS256).getCertificate();
-        Assert.assertThat(consumerCert, Matchers.notNullValue());
+        MatcherAssert.assertThat(consumerCert, Matchers.notNullValue());
 
         try (Closeable idpUpdater = new IdentityProviderAttributeUpdater(identityProviderResource)
             .setAttribute(SAMLIdentityProviderConfig.VALIDATE_SIGNATURE, Boolean.toString(true))
@@ -487,15 +488,15 @@ public class KcSamlSignedBrokerTest extends AbstractBrokerTest {
                     {
                         // Find the Signature element
                         Element signatureElement = DocumentUtil.getDirectChildElement(document.getDocumentElement(), XMLSignature.XMLNS, "Signature");
-                        Assert.assertThat("Signature element not found in request document", signatureElement, Matchers.notNullValue());
+                        MatcherAssert.assertThat("Signature element not found in request document", signatureElement, Matchers.notNullValue());
 
                         // Find the KeyInfo element
                         Element keyInfoElement = DocumentUtil.getDirectChildElement(signatureElement, XMLSignature.XMLNS, "KeyInfo");
-                        Assert.assertThat("KeyInfo element not found in request Signature element", keyInfoElement, Matchers.notNullValue());
+                        MatcherAssert.assertThat("KeyInfo element not found in request Signature element", keyInfoElement, Matchers.notNullValue());
 
                         // Find the X509Data element
                         Element x509DataElement = DocumentUtil.getDirectChildElement(keyInfoElement, XMLSignature.XMLNS, "X509Data");
-                        Assert.assertThat("X509Data element not found in request Signature/KeyInfo element", x509DataElement, Matchers.notNullValue());
+                        MatcherAssert.assertThat("X509Data element not found in request Signature/KeyInfo element", x509DataElement, Matchers.notNullValue());
                     }
                     catch (Exception ex)
                     {

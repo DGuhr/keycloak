@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.NotFoundException;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
@@ -225,7 +226,7 @@ public class SessionExpirationCrossDCTest extends AbstractAdminCrossDCTest {
 
             // Workaround...
             if (checkSomeMessagesSentBetweenDCs) {
-                Assert.assertThat(messagesCount, Matchers.greaterThan(0l));
+                MatcherAssert.assertThat(messagesCount, Matchers.greaterThan(0l));
             }
 
         }, 50, 50);

@@ -17,11 +17,7 @@
 
 package org.keycloak.testsuite;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
-import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.*;
 import org.junit.Assert;
 import org.junit.rules.TestRule;
 import org.junit.runners.model.Statement;
@@ -336,13 +332,13 @@ public class AssertEvents implements TestRule {
             if (expected.getError() != null && ! expected.getType().toString().endsWith("_ERROR")) {
                 expected.setType(expected.getType() + "_ERROR");
             }
-            Assert.assertThat("type", actual.getType(), is(expected.getType()));
-            Assert.assertThat("realm ID", actual.getRealmId(), is(realmId));
-            Assert.assertThat("client ID", actual.getClientId(), is(expected.getClientId()));
-            Assert.assertThat("error", actual.getError(), is(expected.getError()));
-            Assert.assertThat("ip address", actual.getIpAddress(), ipAddress);
-            Assert.assertThat("user ID", actual.getUserId(), is(userId));
-            Assert.assertThat("session ID", actual.getSessionId(), is(sessionId));
+            MatcherAssert.assertThat("type", actual.getType(), is(expected.getType()));
+            MatcherAssert.assertThat("realm ID", actual.getRealmId(), is(realmId));
+            MatcherAssert.assertThat("client ID", actual.getClientId(), is(expected.getClientId()));
+            MatcherAssert.assertThat("error", actual.getError(), is(expected.getError()));
+            MatcherAssert.assertThat("ip address", actual.getIpAddress(), ipAddress);
+            MatcherAssert.assertThat("user ID", actual.getUserId(), is(userId));
+            MatcherAssert.assertThat("session ID", actual.getSessionId(), is(sessionId));
 
             if (details == null || details.isEmpty()) {
 //                Assert.assertNull(actual.getDetails());
@@ -354,7 +350,7 @@ public class AssertEvents implements TestRule {
                         Assert.fail(d.getKey() + " missing");
                     }
 
-                    Assert.assertThat("Unexpected value for " + d.getKey(), actualValue, is(d.getValue()));
+                    MatcherAssert.assertThat("Unexpected value for " + d.getKey(), actualValue, is(d.getValue()));
                 }
                 /*
                 for (String k : actual.getDetails().keySet()) {

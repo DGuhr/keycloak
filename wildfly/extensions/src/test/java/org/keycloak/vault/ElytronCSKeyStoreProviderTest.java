@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -210,7 +211,7 @@ public class ElytronCSKeyStoreProviderTest {
             VaultRawSecret secret = provider.obtainSecret("smtp_key");
             Assert.assertNotNull(secret);
             Assert.assertTrue(secret.get().isPresent());
-            Assert.assertThat(secret, SecretContains.secretContains("secure_master_smtp_secret"));
+            MatcherAssert.assertThat(secret, SecretContains.secretContains("secure_master_smtp_secret"));
 
             // try to retrieve a secret using a key that doesn't exist (neither of the key resolvers provides a key that exists in the vault).
             secret = provider.obtainSecret("another_key");
@@ -262,7 +263,7 @@ public class ElytronCSKeyStoreProviderTest {
             VaultRawSecret secret = provider.obtainSecret("smtp_key");
             Assert.assertNotNull(secret);
             Assert.assertTrue(secret.get().isPresent());
-            Assert.assertThat(secret, SecretContains.secretContains("custom_smtp_secret"));
+            MatcherAssert.assertThat(secret, SecretContains.secretContains("custom_smtp_secret"));
         } finally {
             if (factory != null) {
                 factory.close();

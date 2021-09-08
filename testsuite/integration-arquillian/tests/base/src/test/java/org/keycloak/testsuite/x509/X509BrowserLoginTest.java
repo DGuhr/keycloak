@@ -18,6 +18,7 @@
 
 package org.keycloak.testsuite.x509;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.util.PhantomJSBrowser;
@@ -105,7 +106,7 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
 
         loginConfirmationPage.open();
 
-        Assert.assertThat(loginPage.getError(), containsString("Certificate validation's failed.\n" +
+        MatcherAssert.assertThat(loginPage.getError(), containsString("Certificate validation's failed.\n" +
                 "Key Usage bit 'dataEncipherment' is not set."));
     }
 
@@ -265,7 +266,7 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
 
         loginPage.open();
 
-        Assert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed."));
+        MatcherAssert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed."));
 
         loginPage.login("test-user@localhost", "password");
 
@@ -285,7 +286,7 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
         loginConfirmationPage.open();
         loginPage.assertCurrent();
 
-        Assert.assertThat(loginPage.getInfoMessage(), containsString("X509 client authentication has not been configured yet"));
+        MatcherAssert.assertThat(loginPage.getInfoMessage(), containsString("X509 client authentication has not been configured yet"));
         // Continue with form based login
         loginPage.login("test-user@localhost", "password");
 
@@ -317,7 +318,7 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
         // Verify there is an error message
         Assert.assertNotNull(loginPage.getError());
 
-        Assert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed."));
+        MatcherAssert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed."));
         events.expectLogin()
                 .user((String) null)
                 .session((String) null)
@@ -394,7 +395,7 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
         // Verify there is an error message
         Assert.assertNotNull(loginPage.getError());
 
-        Assert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed."));
+        MatcherAssert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed."));
 
         AssertEvents.ExpectedEvent expectedEvent = events.expectLogin()
                 .user((String) null)
@@ -431,7 +432,7 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
 
             Assert.assertNotNull(loginPage.getError());
 
-            Assert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed.\nUser is disabled"));
+            MatcherAssert.assertThat(loginPage.getError(), containsString("X509 certificate authentication's failed.\nUser is disabled"));
 
             events.expectLogin()
                     .user(userId)
@@ -501,7 +502,7 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
         loginConfirmationPage.open();
         loginPage.assertCurrent();
 
-        Assert.assertThat(loginPage.getInfoMessage(), containsString("X509 client authentication has not been configured yet"));
+        MatcherAssert.assertThat(loginPage.getInfoMessage(), containsString("X509 client authentication has not been configured yet"));
         loginPage.assertCurrent();
 
         // Now setup certificate and login with certificate in existing authenticationSession (Not 100% same scenario as KEYCLOAK-5466, but very similar)
@@ -521,20 +522,20 @@ public class X509BrowserLoginTest extends AbstractX509AuthenticationTest {
         loginConfirmationPage.open();
 
         log.debug("check if on confirm page");
-        Assert.assertThat(loginConfirmationPage.getSubjectDistinguishedNameText(), startsWith("EMAILADDRESS=test-user@localhost"));
+        MatcherAssert.assertThat(loginConfirmationPage.getSubjectDistinguishedNameText(), startsWith("EMAILADDRESS=test-user@localhost"));
         log.debug("check if locale is EN");
-        Assert.assertThat(loginConfirmationPage.getLanguageDropdownText(), is(equalTo("English")));
+        MatcherAssert.assertThat(loginConfirmationPage.getLanguageDropdownText(), is(equalTo("English")));
 
         log.debug("change locale to DE");
         loginConfirmationPage.openLanguage("Deutsch");
         log.debug("check if locale is DE");
-        Assert.assertThat(loginConfirmationPage.getLanguageDropdownText(), is(equalTo("Deutsch")));
-        Assert.assertThat(DroneUtils.getCurrentDriver().getPageSource(), containsString("X509 Client Zertifikat:"));
+        MatcherAssert.assertThat(loginConfirmationPage.getLanguageDropdownText(), is(equalTo("Deutsch")));
+        MatcherAssert.assertThat(DroneUtils.getCurrentDriver().getPageSource(), containsString("X509 Client Zertifikat:"));
 
         log.debug("confirm cert");
         loginConfirmationPage.confirm();
 
         log.debug("check if logged in");
-        Assert.assertThat(appPage.getRequestType(), is(equalTo(AppPage.RequestType.AUTH_RESPONSE)));
+        MatcherAssert.assertThat(appPage.getRequestType(), is(equalTo(AppPage.RequestType.AUTH_RESPONSE)));
     }
 }

@@ -1,5 +1,6 @@
 package org.keycloak.testsuite.adapter.example.authorization;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Assume;
@@ -72,7 +73,7 @@ public abstract class AbstractPhotozJavascriptExecutorTest extends AbstractExamp
         if (output instanceof WebElement) {
             waitUntilElement((WebElement) output).text().contains(value);
         } else {
-            Assert.assertThat((String) output, containsString(value));
+            MatcherAssert.assertThat((String) output, containsString(value));
         }
     }
 

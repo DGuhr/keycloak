@@ -18,6 +18,7 @@
 
 package org.keycloak.testsuite.x509;
 
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Assert;
 import org.junit.Before;
@@ -92,7 +93,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("X509 certificate authentication's failed."));
+        MatcherAssert.assertThat(response.getErrorDescription(), containsString("X509 certificate authentication's failed."));
     }
 
     @Test
@@ -142,7 +143,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("Key Usage bit 'dataEncipherment' is not set."));
+        MatcherAssert.assertThat(response.getErrorDescription(), containsString("Key Usage bit 'dataEncipherment' is not set."));
         events.clear();
     }
 
@@ -240,7 +241,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("Certificate has been revoked, certificate's subject:"));
+        MatcherAssert.assertThat(response.getErrorDescription(), containsString("Certificate has been revoked, certificate's subject:"));
 
     }
 
@@ -283,7 +284,7 @@ public class X509DirectGrantTest extends AbstractX509AuthenticationTest {
 
         assertEquals(401, response.getStatusCode());
         assertEquals("invalid_request", response.getError());
-        Assert.assertThat(response.getErrorDescription(), containsString("has expired on:"));
+        MatcherAssert.assertThat(response.getErrorDescription(), containsString("has expired on:"));
     }
 
     private void loginForceTemporaryAccountLock() throws Exception {

@@ -24,6 +24,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.graphene.page.Page;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -334,7 +335,7 @@ public class ImpersonationTest extends AbstractKeycloakTest {
                     .collect(Collectors.toSet());
 
             Assert.assertNotNull(cookies);
-            Assert.assertThat(cookies, is(not(empty())));
+            MatcherAssert.assertThat(cookies, is(not(empty())));
 
             return cookies;
         } catch (IOException e) {
@@ -347,7 +348,7 @@ public class ImpersonationTest extends AbstractKeycloakTest {
             client.realms().realm("test").users().get(impersonatedUserId).impersonate();
             Assert.fail("Expected ClientErrorException wasn't thrown.");
         } catch (ClientErrorException e) {
-            Assert.assertThat(e.getMessage(), containsString("403 Forbidden"));
+            MatcherAssert.assertThat(e.getMessage(), containsString("403 Forbidden"));
         }
     }
 
@@ -441,7 +442,7 @@ public class ImpersonationTest extends AbstractKeycloakTest {
                     .collect(Collectors.toSet());
 
             Assert.assertNotNull(cookies);
-            Assert.assertThat(cookies, is(not(empty())));
+            MatcherAssert.assertThat(cookies, is(not(empty())));
 
             return cookies;
         } catch (IOException e) {

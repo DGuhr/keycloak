@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -484,7 +485,7 @@ public class LDAPSyncTest extends AbstractLDAPTest {
 
             // sync to Keycloak should pass without an error
             SynchronizationResult syncResult = new GroupLDAPStorageMapperFactory().create(session, mapperModel).syncDataFromFederationProviderToKeycloak(appRealm);
-            Assert.assertThat(syncResult.getFailed(), Matchers.is(0));
+            MatcherAssert.assertThat(syncResult.getFailed(), Matchers.is(0));
         });
 
         testingClient.server().run(session -> {

@@ -17,6 +17,8 @@
 package org.keycloak.testsuite.admin.partialimport;
 
 import java.io.IOException;
+
+import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -380,8 +382,8 @@ public class PartialImportTest extends AbstractAuthTest {
             String id = result.getId();
             UserResource userRsc = testRealmResource().users().get(id);
             UserRepresentation user = userRsc.toRepresentation();
-            Assert.assertThat(user.getUsername(), startsWith(USER_PREFIX));
-            Assert.assertThat(userIds, hasItem(id));
+            MatcherAssert.assertThat(user.getUsername(), startsWith(USER_PREFIX));
+            MatcherAssert.assertThat(userIds, hasItem(id));
         }
     }
 

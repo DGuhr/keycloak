@@ -18,6 +18,8 @@ package org.keycloak.testsuite.migration;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+
+import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Before;
 import org.keycloak.representations.idm.RealmRepresentation;
@@ -43,8 +45,8 @@ public abstract class AbstractJsonFileImportMigrationTest extends AbstractMigrat
      * The method will throw javax.ws.rs.NotFoundException in case the realm is not successfully imported
      */
     protected void checkRealmsImported() {
-        Assert.assertThat(migrationRealm.toRepresentation().getRealm(), is(equalTo("Migration")));
-        Assert.assertThat(migrationRealm2.toRepresentation().getRealm(), is(equalTo("Migration2")));
+        MatcherAssert.assertThat(migrationRealm.toRepresentation().getRealm(), is(equalTo("Migration")));
+        MatcherAssert.assertThat(migrationRealm2.toRepresentation().getRealm(), is(equalTo("Migration2")));
     }
 
     @Override

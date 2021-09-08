@@ -16,6 +16,7 @@
  */
 package org.keycloak.testsuite.updaters;
 
+import org.hamcrest.MatcherAssert;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.AuthenticationManagementResource;
 import org.keycloak.admin.client.resource.ClientResource;
@@ -112,7 +113,7 @@ public class Creator<T> implements AutoCloseable {
 
     public static Creator<IdentityProviderResource> create(RealmResource realmResource, IdentityProviderRepresentation rep) {
         final IdentityProvidersResource res = realmResource.identityProviders();
-        Assert.assertThat("Identity provider alias must be specified", rep.getAlias(), Matchers.notNullValue());
+        MatcherAssert.assertThat("Identity provider alias must be specified", rep.getAlias(), Matchers.notNullValue());
         try (Response response = res.create(rep)) {
             String createdId = getCreatedId(response);
             final IdentityProviderResource r = res.get(rep.getAlias());

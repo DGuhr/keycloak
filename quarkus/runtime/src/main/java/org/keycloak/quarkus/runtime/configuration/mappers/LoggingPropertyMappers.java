@@ -1,12 +1,11 @@
 package org.keycloak.quarkus.runtime.configuration.mappers;
 
-import org.jboss.logmanager.LogManager;
-
 import java.util.Arrays;
 
 final class LoggingPropertyMappers {
     private LoggingPropertyMappers(){}
 
+    //TODO change to conf, extend from discussions, create first PR.
     public static PropertyMapper[] getLoggingPropertyMappers() {
         return new PropertyMapper[] {
                 builder()
@@ -22,7 +21,7 @@ final class LoggingPropertyMappers {
                         .to("quarkus.log.")
                         .description("Placeholder for extension via properties file...")
                         .build(),
-                builder()
+                builder() //thought we didn't need this due to wildcard, but without it json logging always on, no matter what's used in keycloak.properties. weird.
                         .from("log.json")
                         .to("quarkus.log.console.json")
                         .description("Enable / Disable JSON Logging to console.")

@@ -12,7 +12,7 @@ final class LoggingPropertyMappers {
                 builder()
                         .from("log.level")
                         .to("quarkus.log.level")
-                        .description("Set the root logging Level of the application.")
+                        .description("Set the root logging Level.")
                         .expectedValues(Arrays.asList("OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE","ALL"))
                         .defaultValue("INFO")
                         .paramLabel("level")
@@ -20,6 +20,19 @@ final class LoggingPropertyMappers {
                 builder()
                         .from("log.")
                         .to("quarkus.log.")
+                        .description("Placeholder for extension via properties file...")
+                        .build(),
+                builder()
+                        .from("log.db.level")
+                        .to("quarkus.log.category.\"org.hibernate\".level")
+                        .description("Set the logging Level for db related logs.")
+                        .expectedValues(Arrays.asList("OFF","FATAL","ERROR","WARN","INFO","DEBUG","TRACE","ALL"))
+                        .defaultValue("INFO")
+                        .paramLabel("level")
+                        .build(),
+                builder()
+                        .from("log.db.")
+                        .to("quarkus.log.\"org.hibernate\".")
                         .description("Placeholder for extension via properties file...")
                         .build()
         };

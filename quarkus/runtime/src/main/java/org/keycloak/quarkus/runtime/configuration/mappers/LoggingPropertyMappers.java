@@ -23,6 +23,14 @@ final class LoggingPropertyMappers {
                         .description("Placeholder for extension via properties file...")
                         .build(),
                 builder()
+                        .from("log.json")
+                        .to("quarkus.log.console.json")
+                        .description("Enable / Disable JSON Logging to console.")
+                        .paramLabel(Boolean.TRUE + "|" + Boolean.FALSE)
+                        .expectedValues(Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString()))
+                        .defaultValue(Boolean.TRUE.toString())
+                        .build(),
+                builder()
                         .from("log.db.level")
                         .to("quarkus.log.category.\"org.hibernate\".level")
                         .description("Set the logging Level for db related logs.")
@@ -30,11 +38,6 @@ final class LoggingPropertyMappers {
                         .defaultValue("INFO")
                         .paramLabel("level")
                         .build(),
-                builder()
-                        .from("log.db.")
-                        .to("quarkus.log.\"org.hibernate\".")
-                        .description("Placeholder for extension via properties file...")
-                        .build()
         };
     }
 

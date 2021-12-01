@@ -23,6 +23,7 @@ import org.keycloak.it.junit5.extension.CLITest;
 
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 
 @CLITest
 class ShowConfigCommandTest {
@@ -43,5 +44,18 @@ class ShowConfigCommandTest {
                 .contains("Quarkus Configuration"));
         Assertions.assertTrue(result.getOutput()
                 .contains("Profile \"import_export\" Configuration"));
+    }
+
+    @Test
+    @Launch({ "-cf=src/test/resources/ShowConfigCommandTest/keycloak.properties", "show-config", "all" })
+    void testShowConfigCommandHidesCredentialsInProfiles(LaunchResult result) {
+        String output = result.getOutput();
+        Assertions.assertFalse(output.contains("testsecretpw"));
+        Assertions.assertFalse(output.contains("testsecretpw"));
+        Assertions.assertTrue(output.contains("kc.db.password =  " + PropertyMappers.VALUE_MASK));
+        Assertions.assertTrue(output.contains("kc.db.password =  " + PropertyMappers.VALUE_MASK));
+        Assertions.assertTrue(output.contains("%dev.kc.db.password =  " + PropertyMappers.VALUE_MASK));
+        Assertions.assertTrue(output.contains("%import_export.kc.db.password =  " + PropertyMappers.VALUE_MASK));
+        Assertions.assertTrue(output.contains("%dev.kc.https.key-store.password =  " + PropertyMappers.VALUE_MASK));
     }
 }

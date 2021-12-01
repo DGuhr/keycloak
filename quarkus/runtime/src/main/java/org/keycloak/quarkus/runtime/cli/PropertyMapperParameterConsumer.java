@@ -57,6 +57,11 @@ public final class PropertyMapperParameterConsumer implements CommandLine.IParam
         // consumes the value
         String value = args.pop();
 
+        if(value.trim().isEmpty()) {
+            throw new ParameterException(
+                    commandLine, "Option '" + name + "' needs a value.");
+        }
+
         if (!args.isEmpty() && isOptionValue(args.peek())) {
             throw new ParameterException(
                     commandLine, "Option '" + name + "' expects a single value (" + argSpec.paramLabel() + ")" + getExpectedValuesMessage(argSpec, option));
@@ -71,7 +76,7 @@ public final class PropertyMapperParameterConsumer implements CommandLine.IParam
     }
 
     private boolean isOptionValue(String arg) {
-        return !(arg.startsWith(ARG_PREFIX) || arg.startsWith(Picocli.ARG_SHORT_PREFIX));
+        return !(arg.startsWith(ARG_PREFIX) || arg.startsWith(Picocli.ARG_SHORT_PREFIX) || arg.trim().isEmpty());
     }
 
     private String getExpectedValuesMessage(ArgSpec argSpec, OptionSpec option) {

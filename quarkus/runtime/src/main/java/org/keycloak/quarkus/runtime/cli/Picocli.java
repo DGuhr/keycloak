@@ -45,6 +45,7 @@ import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+import io.quarkus.runtime.Quarkus;
 import org.keycloak.quarkus.runtime.cli.command.Build;
 import org.keycloak.quarkus.runtime.cli.command.Main;
 import org.keycloak.quarkus.runtime.cli.command.Start;
@@ -77,9 +78,25 @@ public final class Picocli {
     public static void parseAndRun(List<String> cliArgs) {
         CommandLine cmd = createCommandLine(cliArgs);
 
-        runReAugmentationIfNeeded(cliArgs, cmd);
+        try {
+            //before doing reaugmentation and execution of the command, sanity-check the cli input.
+            cmd.parseArgs(cliArgs.toArray(new String[0]));
 
-        cmd.execute(cliArgs.toArray(new String[0]));
+            runReAugmentationIfNeeded(cliArgs, cmd);
+            cmd.execute(cliArgs.toArray(new String[0]));
+        } catch (CommandLine.UnmatchedArgumentException e) {
+            List<String> unmatchedKeys = new ArrayList<>();
+            for(String unmatched : e.getUnmatched()) {
+                unmatchedKeys.add(unmatched.split("[= ]")[0]);
+            }
+            cmd.getErr().println("Unknown Option(s) detected: " + unmatchedKeys + "." + System.lineSeparator() +"Please check your CLI Input, " +
+                    "it has to be in the format --<option>=<value> or --<option> <value>." +
+                    System.lineSeparator() + "Multiple Spaces and Tabs are not allowed." + System.lineSeparator() + "Your Input: " + getSanitizedCliInput());
+            Quarkus.asyncExit(cmd.getCommandSpec().exitCodeOnInvalidInput());
+        } catch (Exception e) {
+            cmd.getErr().println(e.getMessage());
+            Quarkus.asyncExit(cmd.getCommandSpec().exitCodeOnExecutionException());
+        }
     }
 
     private static void runReAugmentationIfNeeded(List<String> cliArgs, CommandLine cmd) {

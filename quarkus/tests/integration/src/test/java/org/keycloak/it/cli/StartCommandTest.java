@@ -25,6 +25,7 @@ import org.keycloak.it.junit5.extension.CLITest;
 
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
+import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
 
 @CLITest
 public class StartCommandTest {
@@ -33,21 +34,21 @@ public class StartCommandTest {
     @Launch({ "start", "--hostname-strict=false" })
     void failNoTls(LaunchResult result) {
         assertTrue(result.getOutput().contains("Key material not provided to setup HTTPS"),
-                () -> "The Output:\n" + result.getOutput() + "doesn't contains the expected string.");
+                () -> "The Output:\n" + result.getOutput() + "doesn't contain the expected string.");
     }
 
     @Test
     @Launch({ "start", "--http-enabled=true" })
     void failNoHostnameNotSet(LaunchResult result) {
         assertTrue(result.getOutput().contains("ERROR: Strict hostname resolution configured but no hostname was set"),
-                () -> "The Output:\n" + result.getOutput() + "doesn't contains the expected string.");
+                () -> "The Output:\n" + result.getOutput() + "doesn't contain the expected string.");
     }
 
     @Test
     @Launch({ "--profile=dev", "start" })
     void failUsingDevProfile(LaunchResult result) {
         assertTrue(result.getErrorOutput().contains("ERROR: You can not 'start' the server using the 'dev' configuration profile. Please re-build the server first, using 'kc.sh build' for the default production profile, or using 'kc.sh build --profile=<profile>' with a profile more suitable for production."),
-                () -> "The Output:\n" + result.getErrorOutput() + "doesn't contains the expected string.");
+                () -> "The Output:\n" + result.getErrorOutput() + "doesn't contain the expected string.");
     }
 
     @Test
@@ -55,6 +56,14 @@ public class StartCommandTest {
     void testHttpEnabled(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         cliResult.assertStarted();
+    }
+
+    @Test
+    @Launch({ "start", "--auto-build", "--db=mariadb", "--db-password=secret", "--https-key-store-password secret"})
+    void testStartWithAutoBuildDoesntShowCredentialsInConsole(LaunchResult result) {
+        CLIResult cliResult = (CLIResult) result;
+        assertTrue(cliResult.getOutput().contains("--db-password=" + PropertyMappers.VALUE_MASK));
+        assertTrue(cliResult.getOutput().contains("--https-key-store-password=" + PropertyMappers.VALUE_MASK));
     }
 
     @Test

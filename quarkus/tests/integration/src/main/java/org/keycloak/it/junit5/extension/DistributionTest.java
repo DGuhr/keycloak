@@ -30,6 +30,13 @@ public @interface DistributionTest {
 
     boolean debug() default false;
     boolean keepAlive() default false;
+    DbContainer useDbContainer() default DbContainer.H2FILE;
+
+    enum DbContainer {
+        POSTGRES,
+        MARIADB,
+        H2FILE;
+    }
 
     enum ReInstall {
         BEFORE_ALL,

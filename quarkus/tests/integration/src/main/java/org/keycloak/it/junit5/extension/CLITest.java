@@ -27,4 +27,5 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith({ CLITestExtension.class })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CLITest {
+
 }

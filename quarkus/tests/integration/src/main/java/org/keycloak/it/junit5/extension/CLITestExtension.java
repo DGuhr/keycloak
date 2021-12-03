@@ -17,10 +17,14 @@
 
 package org.keycloak.it.junit5.extension;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.keycloak.it.junit5.extension.DistributionTest.ReInstall.BEFORE_ALL;
+import static org.keycloak.it.junit5.extension.DistributionTest.DbContainer.POSTGRES;
+import static org.keycloak.it.junit5.extension.DistributionType.DOCKER;
 import static org.keycloak.it.junit5.extension.DistributionType.RAW;
 import static org.keycloak.quarkus.runtime.Environment.forceTestLaunchMode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -35,10 +39,13 @@ import org.keycloak.quarkus.runtime.cli.command.StartDev;
 import io.quarkus.test.junit.QuarkusMainTestExtension;
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 public class CLITestExtension extends QuarkusMainTestExtension {
 
     private KeycloakDistribution dist;
+    private PostgreSQLContainer<?> db;
 
     @Override
     public void beforeEach(ExtensionContext context) throws Exception {
@@ -51,7 +58,19 @@ public class CLITestExtension extends QuarkusMainTestExtension {
                 if (dist == null) {
                     dist = createDistribution(distConfig);
                 }
-                dist.start(Arrays.asList(launch.value()));
+
+                ArrayList<String> cliArgs = new ArrayList<>(List.of(launch.value()));
+                if (POSTGRES.equals(distConfig.useDbContainer())) {
+                    cliArgs.add("--db=postgres");
+                    if (DistributionType.getCurrent().orElse(RAW).equals(RAW)) {
+                        cliArgs.add("--db-url=" + db.getJdbcUrl());
+                    } else if(DistributionType.getCurrent().orElse(DOCKER).equals(DOCKER)) {
+                        String jdbcUrl = "jdbc:postgresql://" + db.getContainerInfo().getNetworkSettings().getIpAddress() + ":" + "5432" + "/" + db.getDatabaseName();
+                        cliArgs.add("--db-url=" + jdbcUrl);
+                    }
+                }
+
+                dist.start(cliArgs);
             }
         } else {
             configureProfile(context);
@@ -78,6 +97,10 @@ public class CLITestExtension extends QuarkusMainTestExtension {
             // just to make sure the server is stopped after all tests
             dist.stop();
         }
+
+        if(db != null) {
+            db.stop();
+        }
         super.afterAll(context);
     }
 
@@ -90,6 +113,19 @@ public class CLITestExtension extends QuarkusMainTestExtension {
         DistributionTest distConfig = getDistributionConfig(context);
 
         if (distConfig != null) {
+            if (POSTGRES.equals(distConfig.useDbContainer())) {
+                DockerImageName imageName = DockerImageName.parse("postgres:9.6.24");
+                try( PostgreSQLContainer<?> postgresDb = new PostgreSQLContainer<>(imageName)) {
+                    postgresDb.withDatabaseName("keycloak")
+                            .withUsername("testuser")
+                            .withPassword("testPassword")
+                            .withExposedPorts(5432);
+                    this.db = postgresDb;
+                }
+
+                db.start();
+                assertTrue(db.isRunning());
+            }
             if (BEFORE_ALL.equals(distConfig.reInstall())) {
                 dist = createDistribution(distConfig);
             }

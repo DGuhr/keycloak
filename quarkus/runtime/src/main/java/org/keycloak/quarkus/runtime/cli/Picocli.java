@@ -79,8 +79,10 @@ public final class Picocli {
         CommandLine cmd = createCommandLine(cliArgs);
 
         try {
-            //before doing reaugmentation and execution of the command, sanity-check the cli input.
-            cmd.parseArgs(cliArgs.toArray(new String[0]));
+            //before doing reaugmentation, sanity-check the cli input.
+            if(hasAutoBuildOption(cliArgs) || hasBuildOption(cliArgs) && !isHelpCommand(cliArgs)) {
+                cmd.parseArgs(cliArgs.toArray(new String[0]));
+            }
 
             runReAugmentationIfNeeded(cliArgs, cmd);
             cmd.execute(cliArgs.toArray(new String[0]));
@@ -126,7 +128,9 @@ public final class Picocli {
     public static boolean hasAutoBuildOption(List<String> cliArgs) {
         return cliArgs.contains(AUTO_BUILD_OPTION_LONG) || cliArgs.contains(AUTO_BUILD_OPTION_SHORT);
     }
-
+    public static boolean hasBuildOption(List<String> cliArgs) {
+        return cliArgs.contains(Build.NAME);
+    }
     public static boolean requiresReAugmentation(CommandLine cmd) {
         if (hasConfigChanges()) {
             Predicate<String> profileOptionMatcher = Main.PROFILE_LONG_NAME::equals;

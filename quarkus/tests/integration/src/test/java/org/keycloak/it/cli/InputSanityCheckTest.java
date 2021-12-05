@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.keycloak.it.junit5.extension.CLIResult;
 import org.keycloak.it.junit5.extension.CLITest;
+import org.keycloak.it.junit5.extension.DistributionTest;
 import org.keycloak.quarkus.runtime.cli.command.Start;
 import org.keycloak.quarkus.runtime.cli.command.StartDev;
 import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMappers;
@@ -35,33 +36,21 @@ public class InputSanityCheckTest {
     @Test
     @Launch({ StartDev.NAME, "--db=mariadb", "--db-password=secret", "--https-key-store-password "})
     void testSpaceSeparatorWithoutValueShowsRightErrorMessage(LaunchResult result) {
-
-        String expectedOutput = "Unknown Option(s) detected: [--https-key-store-password]." + System.lineSeparator() +
-                "Please check your CLI Input, it has to be in the format --<option>=<value> or --<option> <value>." + System.lineSeparator() +
-                "Multiple Spaces and Tabs are not allowed." + System.lineSeparator() +
-                "Your Input: [--db=mariadb, --db-password=*******, --https-key-store-password=]";
-
         CLIResult cliResult = (CLIResult) result;
-        Assertions.assertEquals(expectedOutput, cliResult.getErrorOutput());
+        cliResult.assertError("Unknown option: '--https-key-store-password '");
     }
 
     @Test
     @Launch({StartDev.NAME, "--db=mariadb", "--db-password=secret", "--https-key-store-password="})
     void testEqualsSeparatorWithoutValueShowsRightErrorMessage(LaunchResult result) {
-
-        String expectedOutput = "Option '--https-key-store-password' needs a value.";
-
         CLIResult cliResult = (CLIResult) result;
-        Assertions.assertEquals(expectedOutput, cliResult.getErrorOutput());
+        cliResult.assertError("Missing required value for option '--https-key-store-password' (password).");
     }
 
     @Test
     @Launch({StartDev.NAME, "--db=mariadb", "--db-password=secret", "--https-key-store-password=  "})
     void testEqualsSeparatorWithWhiteSpaceOnlyValueShowsRightErrorMessage(LaunchResult result) {
-
-        String expectedOutput = "Option '--https-key-store-password' needs a value.";
-
         CLIResult cliResult = (CLIResult) result;
-        Assertions.assertEquals(expectedOutput, cliResult.getErrorOutput());
+        cliResult.assertError("Missing required value for option '--https-key-store-password' (password).");
     }
 }

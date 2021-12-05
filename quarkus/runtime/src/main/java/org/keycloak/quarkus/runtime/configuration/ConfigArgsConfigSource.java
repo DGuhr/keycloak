@@ -58,7 +58,7 @@ public class ConfigArgsConfigSource extends PropertiesConfigSource {
     public static final String CLI_ARGS = "kc.config.args";
     private static final String ARG_SEPARATOR = ";;";
     private static final Pattern ARG_SPLIT = Pattern.compile(";;");
-    private static final Pattern ARG_KEY_VALUE_SPLIT = Pattern.compile("=");
+    private static final Pattern ARG_KEY_VALUE_SPLIT = Pattern.compile("[= ]");
     private static final ConfigArgsConfigSource INSTANCE = new ConfigArgsConfigSource();
     private static List<String> IGNORED_ARGS;
 

@@ -49,7 +49,6 @@ import org.keycloak.common.Version;
 
 public final class RawKeycloakDistribution implements KeycloakDistribution {
 
-
     private Process keycloak;
     private int exitCode = -1;
     private final Path distPath;

@@ -17,21 +17,24 @@
 
 package org.keycloak.quarkus.runtime.configuration;
 
+import io.smallrye.config.SysPropConfigSource;
+import io.smallrye.config.common.AbstractConfigSource;
+import io.smallrye.config.common.utils.ConfigSourceUtil;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import org.eclipse.microprofile.config.spi.ConfigSource;
 
 /**
  * The only reason for this config source is to keep the Keycloak specific properties when configuring the server so that
  * they are read again when running the server after the configuration.
  */
-public class SysPropConfigSource implements ConfigSource {
+public class KcSysPropConfigSource extends AbstractConfigSource {
 
     private final Map<String, String> properties = new TreeMap<>();
+    private static final int ORDINAL = 550;
 
-    public SysPropConfigSource() {
+    public KcSysPropConfigSource() {
         for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
             String key = (String) entry.getKey();
             if (key.startsWith(MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX)) {
@@ -50,16 +53,18 @@ public class SysPropConfigSource implements ConfigSource {
         return properties.keySet();
     }
 
+    @Override
     public String getValue(final String propertyName) {
         return System.getProperty(propertyName);
     }
 
+    @Override
     public String getName() {
         return "KcSysPropConfigSource";
     }
 
     @Override
     public int getOrdinal() {
-        return 550;
+        return ORDINAL;
     }
 }

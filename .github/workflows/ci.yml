@@ -1,6 +1,12 @@
 name: Keycloak CI
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'docs/guides/**'
+  pull_request:
+    paths-ignore:
+      - 'docs/guides/**'
 
 env:
   DEFAULT_JDK_VERSION: 11

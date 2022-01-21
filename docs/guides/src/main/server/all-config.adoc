@@ -5,7 +5,7 @@
 title="All configuration"
 summary="All the configuration you will ever need and want">
 
-
+TESTFOO
 <#list ctx.options.categories as category>
 <#assign categoryOptions=ctx.options.getValues(category)>
 <#if categoryOptions?has_content>

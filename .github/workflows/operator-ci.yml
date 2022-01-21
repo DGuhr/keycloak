@@ -1,6 +1,12 @@
 name: Keycloak Operator CI
 
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore:
+      - 'docs/guides/**'
+  pull_request:
+    paths-ignore:
+      - 'docs/guides/**'
 
 env:
   JDK_VERSION: 11

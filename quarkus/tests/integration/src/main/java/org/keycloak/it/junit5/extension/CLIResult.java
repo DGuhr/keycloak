@@ -133,4 +133,7 @@ public interface CLIResult extends LaunchResult {
             fail("No JSON found in output.");
         }
     }
+
+    default void assertInvalidPort() { assertError("Must be a port number between 0 and 65535");};
+
 }

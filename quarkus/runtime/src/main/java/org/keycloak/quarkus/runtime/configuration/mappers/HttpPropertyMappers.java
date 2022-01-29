@@ -4,7 +4,9 @@ import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
 import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.Messages;
+import org.keycloak.quarkus.runtime.cli.PortConfigurationConverter;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
+import org.keycloak.quarkus.runtime.configuration.model.PortConfiguration;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -45,6 +47,7 @@ final class HttpPropertyMappers {
                         .defaultValue(String.valueOf(8080))
                         .description("The used HTTP port.")
                         .paramLabel("port")
+                        .useType(PortConfiguration.class)
                         .build(),
                 builder().from("https-port")
                         .to("quarkus.http.ssl-port")

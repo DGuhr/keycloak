@@ -28,12 +28,13 @@ import java.util.function.BiFunction;
 import io.smallrye.config.ConfigSourceInterceptorContext;
 import io.smallrye.config.ConfigValue;
 
+import org.keycloak.quarkus.runtime.cli.PortConfigurationConverter;
 import org.keycloak.quarkus.runtime.configuration.MicroProfileConfigProvider;
 
 public class PropertyMapper {
 
     static PropertyMapper IDENTITY = new PropertyMapper(null, null, null, null, null,
-            false,null, null, false,Collections.emptyList(),null, true) {
+            false,null, null, false,Collections.emptyList(),null, true, null) {
         @Override
         public ConfigValue getConfigValue(String name, ConfigSourceInterceptorContext context) {
             return context.proceed(name);
@@ -54,10 +55,11 @@ public class PropertyMapper {
     private final boolean hidden;
     private final String envVarFormat;
     private String cliFormat;
+    private final Class<?> type;
 
     PropertyMapper(String from, String to, String defaultValue, BiFunction<String, ConfigSourceInterceptorContext, String> mapper,
-            String mapFrom, boolean buildTime, String description, String paramLabel, boolean mask, Iterable<String> expectedValues,
-            ConfigCategory category, boolean hidden) {
+                   String mapFrom, boolean buildTime, String description, String paramLabel, boolean mask, Iterable<String> expectedValues,
+                   ConfigCategory category, boolean hidden, Class<?> type) {
         this.from = MicroProfileConfigProvider.NS_KEYCLOAK_PREFIX + from;
         this.to = to == null ? this.from : to;
         this.defaultValue = defaultValue;
@@ -72,6 +74,7 @@ public class PropertyMapper {
         this.hidden = hidden;
         this.cliFormat = toCliFormat(from);
         this.envVarFormat = toEnvVarFormat(this.from);
+        this.type = type;
     }
 
     public static PropertyMapper.Builder builder(String fromProp, String toProp) {
@@ -195,6 +198,10 @@ public class PropertyMapper {
         return mask;
     }
 
+    public Class<?> getType() {
+        return type != null ? type : String.class;
+    }
+
     private ConfigValue transformValue(String value, ConfigSourceInterceptorContext context) {
         if (value == null) {
             return null;
@@ -215,6 +222,7 @@ public class PropertyMapper {
 
     public static class Builder {
 
+        private Class<?> type;
         private String from;
         private String to;
         private String defaultValue;
@@ -237,6 +245,11 @@ public class PropertyMapper {
             this.to = toProp;
         }
 
+        public Builder useType(Class<?> type) {
+            this.type = type;
+            return this;
+        }
+
         public Builder from(String from) {
             this.from = from;
             return this;
@@ -246,7 +259,6 @@ public class PropertyMapper {
             this.to = to;
             return this;
         }
-
 
         public Builder defaultValue(String defaultValue) {
             this.defaultValue = defaultValue;
@@ -314,7 +326,7 @@ public class PropertyMapper {
 
         public PropertyMapper build() {
             return new PropertyMapper(from, to, defaultValue, mapper, mapFrom, isBuildTimeProperty, description, paramLabel,
-                    isMasked, expectedValues, category, hidden);
+                    isMasked, expectedValues, category, hidden, type);
         }
     }
 }

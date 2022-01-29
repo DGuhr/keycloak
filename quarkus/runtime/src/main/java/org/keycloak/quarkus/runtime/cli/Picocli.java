@@ -61,6 +61,7 @@ import org.keycloak.quarkus.runtime.configuration.mappers.PropertyMapper;
 import org.keycloak.quarkus.runtime.Environment;
 
 import io.smallrye.config.ConfigValue;
+import org.keycloak.quarkus.runtime.configuration.model.PortConfiguration;
 import picocli.CommandLine;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Model.OptionSpec;
@@ -355,13 +356,12 @@ public final class Picocli {
         addOption(spec, Build.NAME, true, hasAutoBuildOption(cliArgs));
 
         CommandLine cmd = new CommandLine(spec);
-
+        cmd.registerConverter(PortConfiguration.class, new PortConfigurationConverter());
         cmd.setExecutionExceptionHandler(new ExecutionExceptionHandler());
         cmd.setParameterExceptionHandler(new ShortErrorMessageHandler());
         cmd.setHelpFactory(new HelpFactory());
         cmd.getHelpSectionMap().put(SECTION_KEY_COMMAND_LIST, new SubCommandListRenderer());
         cmd.setErr(new PrintWriter(System.err, true));
-
         return cmd;
     }
 
@@ -408,14 +408,19 @@ public final class Picocli {
                 String defaultValue = mapper.getDefaultValue();
                 Iterable<String> expectedValues = mapper.getExpectedValues();
 
-                argGroupBuilder.addArg(OptionSpec.builder(name)
+                OptionSpec.Builder optBuilder = OptionSpec.builder(name)
                         .defaultValue(defaultValue)
                         .description(description)
                         .paramLabel(mapper.getParamLabel())
                         .completionCandidates(expectedValues)
-                        .parameterConsumer(PropertyMapperParameterConsumer.INSTANCE)
-                        .type(String.class)
-                        .hidden(mapper.isHidden())
+                        .type(mapper.getType())
+                        .hidden(mapper.isHidden());
+
+                if (mapper.getType().equals(String.class)) {
+                    optBuilder.parameterConsumer(PropertyMapperParameterConsumer.INSTANCE);
+                }
+
+                argGroupBuilder.addArg(optBuilder
                         .build());
             }
 

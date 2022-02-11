@@ -409,9 +409,6 @@ jobs:
       - name: Update maven settings
         run: mkdir -p ~/.m2 ; cp .github/settings.xml ~/.m2/
 
-      - name: Prepare the local distribution archives
-        run: mvn clean install -DskipTests -Pdistribution
-
       - name: Run Quarkus Integration Tests
         run: |
           mvn clean install -nsu -B -f quarkus/tests/pom.xml | misc/log/trimmer.sh

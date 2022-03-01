@@ -2,11 +2,14 @@ package org.keycloak.quarkus.runtime.configuration.mappers;
 
 import static org.keycloak.quarkus.runtime.integration.QuarkusPlatform.addInitializationException;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 
 import org.jboss.logmanager.LogContext;
+import org.keycloak.quarkus.runtime.Environment;
 import org.keycloak.quarkus.runtime.Messages;
 
 import io.smallrye.config.ConfigSourceInterceptorContext;
@@ -14,6 +17,8 @@ import io.smallrye.config.ConfigSourceInterceptorContext;
 final class LoggingPropertyMappers {
 
     private static final String DEFAULT_LOG_LEVEL = "info";
+    private static final String DEFAULT_LOG_PATH = "/data/log/keycloak.log";
+    private static final String DEFAULT_LOG_FILENAME = "keycloak.log";
 
     private LoggingPropertyMappers(){}
 
@@ -69,8 +74,30 @@ final class LoggingPropertyMappers {
                         .defaultValue("%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p [%c] (%t) %s%e%n")
                         .description("The format of log entries. If the format has spaces in it, you need to escape the value such as \"<format>\".")
                         .paramLabel("format")
+                        .build(),
+                builder().from("log-file-enabled")
+                        .to("quarkus.log.file.enable")
+                        .defaultValue(Boolean.FALSE.toString())
+                        .description("Enable or disable File logging.")
+                        .paramLabel(Boolean.TRUE + "|" + Boolean.FALSE)
+                        .expectedValues(Arrays.asList(Boolean.TRUE.toString(), Boolean.FALSE.toString()))
+                        .build(),
+                builder().from("log-file")
+                        .to("quarkus.log.file.path")
+                        .defaultValue(Environment.getHomeDir()+DEFAULT_LOG_PATH)
+                        .description("Set the path... TODO.")
+                        .paramLabel("<path>/<file-name>.log")
+                        .transformer(LoggingPropertyMappers::resolveFileLogLocation)
                         .build()
         };
+    }
+
+    private static String resolveFileLogLocation(String value, ConfigSourceInterceptorContext configSourceInterceptorContext) {
+        if (value.endsWith(File.separator))
+        {
+            return value + DEFAULT_LOG_FILENAME;
+        }
+        return value;
     }
 
     private static Level toLevel(String categoryLevel) throws IllegalArgumentException {

@@ -1062,6 +1062,8 @@ public class OAuthClient {
 
     public OIDCConfigurationRepresentation doWellKnownRequest(String realm) {
         try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            System.out.println("----- Creating well known request to: " + baseUrl + "/realms/" + realm + "/.well-known/openid-configuration");
+
             SimpleHttp request = SimpleHttp.doGet(baseUrl + "/realms/" + realm + "/.well-known/openid-configuration",
                     client);
             if (requestHeaders != null) {

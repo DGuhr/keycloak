@@ -21,7 +21,7 @@ public abstract class AbstractHostnameTest extends AbstractKeycloakTest {
     @ArquillianResource
     protected ContainerController controller;
 
-    void reset() throws Exception {
+    void reset(boolean isStandardPort) throws Exception {
         LOGGER.info("Reset hostname config to default");
 
         if (suiteContext.getAuthServerInfo().isUndertow()) {
@@ -42,7 +42,7 @@ public abstract class AbstractHostnameTest extends AbstractKeycloakTest {
         } else if (suiteContext.getAuthServerInfo().isQuarkus()) {
             KeycloakQuarkusServerDeployableContainer container = (KeycloakQuarkusServerDeployableContainer)suiteContext.getAuthServerInfo().getArquillianContainer().getDeployableContainer();
             container.resetConfiguration();
-            configureDefault(OAuthClient.AUTH_SERVER_ROOT, false, null);
+            configureDefault(OAuthClient.AUTH_SERVER_ROOT, false, null, isStandardPort);
             container.restartServer();
         } else {
             throw new RuntimeException("Don't know how to config");
@@ -51,7 +51,7 @@ public abstract class AbstractHostnameTest extends AbstractKeycloakTest {
         reconnectAdminClient();
     }
 
-    void configureDefault(String frontendUrl, boolean forceBackendUrlToFrontendUrl, String adminUrl) throws Exception {
+    void configureDefault(String frontendUrl, boolean forceBackendUrlToFrontendUrl, String adminUrl, boolean isStandardPort) throws Exception {
         LOGGER.infov("Configuring default hostname provider: frontendUrl={0}, forceBackendUrlToFrontendUrl={1}, adminUrl={3}", frontendUrl, forceBackendUrlToFrontendUrl, adminUrl);
 
         if (suiteContext.getAuthServerInfo().isUndertow()) {
@@ -75,18 +75,28 @@ public abstract class AbstractHostnameTest extends AbstractKeycloakTest {
             KeycloakQuarkusServerDeployableContainer container = (KeycloakQuarkusServerDeployableContainer)suiteContext.getAuthServerInfo().getArquillianContainer().getDeployableContainer();
             List<String> additionalArgs = new ArrayList<>();
             URI frontendUri = URI.create(frontendUrl);
-            // enable proxy so that we can check headers are taken into account when building urls
-            additionalArgs.add("--proxy=reencrypt");
+
+            // enable proxy in DefaultHostnameTest so that we can check headers are taken into account when building urls
+            if (isStandardPort) {
+                additionalArgs.add("--proxy=reencrypt");
+                additionalArgs.add("--hostname-path=" + frontendUri.getPath());
+            }
+
+            System.out.println("----- CONFIGURE DEFAULT SET HOSTNAME TO: " + frontendUri.getHost());
+
             additionalArgs.add("--hostname=" + frontendUri.getHost());
-            additionalArgs.add("--hostname-path=" + frontendUri.getPath());
+
             if ("https".equals(frontendUri.getScheme())) {
                 additionalArgs.add("--hostname-strict-https=true");
             }
+
             additionalArgs.add("--hostname-strict-backchannel="+ forceBackendUrlToFrontendUrl);
+
             if (adminUrl != null) {
                 URI adminUri = URI.create(adminUrl);
                 additionalArgs.add("--hostname-admin=" + adminUri.getHost());
             }
+
             container.setAdditionalBuildArgs(additionalArgs);
             controller.start(suiteContext.getAuthServerInfo().getQualifier());
         } else {

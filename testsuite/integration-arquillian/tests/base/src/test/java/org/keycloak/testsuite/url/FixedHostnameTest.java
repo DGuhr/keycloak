@@ -113,7 +113,7 @@ public class FixedHostnameTest extends AbstractHostnameTest {
             assertInitialAccessTokenFromMasterRealm(testAdminClient,"hostname", AUTH_SERVER_SCHEME + "://custom-domain.127.0.0.1.nip.io:" + AUTH_SERVER_PORT);
             assertSamlLogin(testAdminClient,"hostname", AUTH_SERVER_SCHEME + "://custom-domain.127.0.0.1.nip.io:" + AUTH_SERVER_PORT);
         } finally {
-            reset();
+            reset(true);
         }
     }
 
@@ -144,7 +144,7 @@ public class FixedHostnameTest extends AbstractHostnameTest {
             assertInitialAccessTokenFromMasterRealm(testAdminClient,"hostname", "http://custom-domain.127.0.0.1.nip.io");
             assertSamlLogin(testAdminClient,"hostname", "http://custom-domain.127.0.0.1.nip.io");
         } finally {
-            reset();
+            reset(true);
         }
     }
 
@@ -175,7 +175,7 @@ public class FixedHostnameTest extends AbstractHostnameTest {
             assertInitialAccessTokenFromMasterRealm(testAdminClient, "hostname", "https://custom-domain.127.0.0.1.nip.io");
             assertSamlLogin(testAdminClient, "hostname", "https://custom-domain.127.0.0.1.nip.io");
         } finally {
-            reset();
+            reset(true);
         }
     }
 

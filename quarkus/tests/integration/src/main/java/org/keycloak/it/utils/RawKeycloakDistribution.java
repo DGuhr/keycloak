@@ -113,6 +113,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
             }
         }
 
+        deleteKeyStore();
         shutdownOutputExecutor();
     }
 
@@ -120,16 +121,20 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     public List<String> getOutputStream() {
         return outputStream;
     }
+
     @Override
     public List<String> getErrorStream() {
         return errorStream;
     }
+
     @Override
     public int getExitCode() {
         return exitCode;
     }
+
     @Override
     public boolean isDebug() { return this.debug; }
+
     @Override
     public boolean isManualStop() { return this.manualStop; }
 
@@ -249,6 +254,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         errorStream.clear();
         exitCode = -1;
         keycloak = null;
+        deleteKeyStore();
         shutdownOutputExecutor();
     }
 
@@ -313,7 +319,15 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
      * @throws Exception if something bad happens
      */
     private void startServer(List<String> arguments) throws Exception {
-        ProcessBuilder pb = new ProcessBuilder(getCliArgs(arguments));
+        List<String> args = new ArrayList(arguments);
+        //add same keystore as in old testsuite to dist
+        // when its explicitly needed to enable TLS port.
+        if(args.contains("--https-key-store-file=keycloak.jks")) {
+            addKeystoreToDist();
+            args.add("--https-key-store-password=secret");
+        }
+
+        ProcessBuilder pb = new ProcessBuilder(getCliArgs(args));
         ProcessBuilder builder = pb.directory(distPath.resolve("bin").toFile());
 
         builder.environment().put("KEYCLOAK_ADMIN", "admin");
@@ -322,6 +336,15 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         FileUtils.deleteDirectory(distPath.resolve("data").toFile());
 
         keycloak = builder.start();
+    }
+
+    private void addKeystoreToDist() throws IOException {
+        Path keystore = Paths.get("." +File.separator + "src" + File.separator + "main"
+                + File.separator + "java" + File.separator + "org" + File.separator + "keycloak"
+                + File.separator + "it" + File.separator + "utils" + File.separator + "keycloak.jks");
+        Path targetFile = distPath.resolve("bin").resolve(keystore.getFileName());
+
+        Files.copy(keystore, targetFile, StandardCopyOption.REPLACE_EXISTING);
     }
 
     @Override
@@ -337,6 +360,14 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     @Override
     public void deleteQuarkusProperties() {
         File file = getQuarkusPropertiesFile();
+
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    private void deleteKeyStore() {
+        File file = getKeystoreFile();
 
         if (file.exists()) {
             file.delete();
@@ -380,6 +411,10 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
     private File getQuarkusPropertiesFile() {
         return distPath.resolve("conf").resolve("quarkus.properties").toFile();
+    }
+
+    private File getKeystoreFile() {
+        return distPath.resolve("bin").resolve("keycloak.jks").toFile();
     }
 
     public Path getDistPath() {

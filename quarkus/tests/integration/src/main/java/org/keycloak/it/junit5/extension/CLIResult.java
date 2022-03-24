@@ -28,6 +28,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.approvaltests.Approvals;
 import io.quarkus.test.junit.main.LaunchResult;
+import org.approvaltests.namer.NamedEnvironment;
+import org.approvaltests.namer.NamerFactory;
+import org.keycloak.it.junit5.extension.approvalTests.KcNamerFactory;
 
 public interface CLIResult extends LaunchResult {
 
@@ -72,8 +75,8 @@ public interface CLIResult extends LaunchResult {
     }
 
     default void assertHelp() {
-        try {
-            Approvals.verify(getOutput());
+        try (NamedEnvironment env = KcNamerFactory.asWindowsOsSpecificTest()) {
+                Approvals.verify(getOutput());
         } catch (Exception cause) {
             throw new RuntimeException("Failed to assert help", cause);
         }

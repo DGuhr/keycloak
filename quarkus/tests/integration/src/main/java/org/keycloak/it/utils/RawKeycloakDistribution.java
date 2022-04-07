@@ -256,27 +256,28 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
         try {
             Path distRootPath = Paths.get(System.getProperty("java.io.tmpdir")).resolve("kc-tests");
             distRootPath.toFile().mkdirs();
-            File distFile = new File("../../dist/target/keycloak-" + Version.VERSION_KEYCLOAK + ".zip");
+
+            File distFile = new File("../../dist/" + File.separator + "target" + File.separator + "keycloak-" + Version.VERSION_KEYCLOAK + ".zip");
             if (!distFile.exists()) {
                 throw new RuntimeException("Distribution archive " + distFile.getAbsolutePath() +" doesn't exists");
             }
             distRootPath.toFile().mkdirs();
             String distDirName = distFile.getName().replace("keycloak-server-x-dist", "keycloak.x");
-            Path distPath = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
+            Path path = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
 
-            if (!inited || (reCreate || !distPath.toFile().exists())) {
-                FileUtils.deleteDirectory(distPath.toFile());
+            if (!inited || (reCreate || !path.toFile().exists())) {
+                FileUtils.deleteDirectory(path.toFile());
                 ZipUtils.unzip(distFile.toPath(), distRootPath);
             }
 
-            // make sure kc.sh is executable
-            if (!distPath.resolve("bin").resolve("kc.sh").toFile().setExecutable(true)) {
-                throw new RuntimeException("Cannot set kc.sh executable");
+            // make sure script is executable
+            if (!path.resolve("bin").resolve(SCRIPT_CMD).toFile().setExecutable(true)) {
+                throw new RuntimeException("Cannot set " + SCRIPT_CMD + " executable");
             }
 
             inited = true;
 
-            return distPath;
+            return path;
         } catch (Exception cause) {
             throw new RuntimeException("Failed to prepare distribution", cause);
         }

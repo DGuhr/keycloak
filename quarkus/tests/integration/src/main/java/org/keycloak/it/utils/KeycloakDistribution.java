@@ -1,5 +1,7 @@
 package org.keycloak.it.utils;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +9,8 @@ import java.util.List;
 import static org.keycloak.quarkus.runtime.Environment.LAUNCH_MODE;
 
 public interface KeycloakDistribution {
+
+    String SCRIPT_CMD = SystemUtils.IS_OS_WINDOWS ? "kc.bat" : "kc.sh";
 
     void start(List<String> arguments);
 
@@ -25,7 +29,7 @@ public interface KeycloakDistribution {
     default String[] getCliArgs(List<String> arguments) {
         List<String> commands = new ArrayList<>();
 
-        commands.add("./kc.sh");
+        commands.add(SCRIPT_CMD);
 
         if (this.isDebug()) {
             commands.add("--debug");

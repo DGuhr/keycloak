@@ -28,7 +28,6 @@ import org.keycloak.it.utils.KeycloakDistribution;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @CLITest
 public class OptionValidationTest {
@@ -51,7 +50,6 @@ public class OptionValidationTest {
     @Launch({"build", "--nosuch"})
     public void failUnknownOption(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
-
         assertEquals("Unknown option: '--nosuch'\n" +
                 "Try '" + KeycloakDistribution.SCRIPT_CMD + " build --help' for more information on the available options.", cliResult.getErrorOutput());
     }
@@ -59,24 +57,27 @@ public class OptionValidationTest {
     @Test
     @Launch({"start", "--db-pasword mytestpw"})
     public void failUnknownOptionWhitespaceSeparatorNotShowingValue(LaunchResult result) {
+        CLIResult cliResult = (CLIResult) result;
         assertEquals("Unknown option: '--db-pasword'\n" +
                 "Possible solutions: --db-username, --db-url-host, --db-pool-min-size, --db-password, --db-url-properties, --db-url-database, --db-schema, --db-pool-max-size, --db-pool-initial-size, --db-url\n" +
-                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", result.getErrorOutput().replace("\r",""));
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", cliResult.getErrorOutput());
     }
 
     @Test
     @Launch({"start", "--db-pasword=mytestpw"})
     public void failUnknownOptionEqualsSeparatorNotShowingValue(LaunchResult result) {
+        CLIResult cliResult = (CLIResult) result;
         assertEquals("Unknown option: '--db-pasword'\n" +
                 "Possible solutions: --db-username, --db-url-host, --db-pool-min-size, --db-password, --db-url-properties, --db-url-database, --db-schema, --db-pool-max-size, --db-pool-initial-size, --db-url\n" +
-                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", result.getErrorOutput().replace("\r",""));
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", cliResult.getErrorOutput());
     }
 
     @Test
     @Launch({"start", "--db-username=foobar","--db-pasword=mytestpw", "--foobar=barfoo"})
     public void failWithFirstOptionOnMultipleUnknownOptions(LaunchResult result) {
+        CLIResult cliResult = (CLIResult) result;
         assertEquals("Unknown option: '--db-pasword'\n" +
                 "Possible solutions: --db-username, --db-url-host, --db-pool-min-size, --db-password, --db-url-properties, --db-url-database, --db-schema, --db-pool-max-size, --db-pool-initial-size, --db-url\n" +
-                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", result.getErrorOutput().replace("\r",""));
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", cliResult.getErrorOutput());
     }
 }

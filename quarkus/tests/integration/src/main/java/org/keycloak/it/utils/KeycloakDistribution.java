@@ -32,7 +32,8 @@ public interface KeycloakDistribution {
         if (Environment.isWindows()) {
             commands.add("cmd.exe");
             commands.add("/c");
-            commands.add("start");
+            //to allow paths with spaces
+            commands.add("\"\"");
         }
 
         commands.add(SCRIPT_CMD);

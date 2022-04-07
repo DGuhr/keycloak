@@ -269,6 +269,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
             Path path = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
 
             if (!inited || (reCreate || !path.toFile().exists())) {
+
                 if (!Environment.isWindows()) {
                     FileUtils.deleteDirectory(path.toFile());
                 } else {
@@ -278,6 +279,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                                 .forEach(File::delete);
                     }
                 }
+
                 ZipUtils.unzip(distFile.toPath(), distRootPath);
             }
 

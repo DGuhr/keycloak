@@ -35,11 +35,13 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -52,6 +54,7 @@ import io.quarkus.fs.util.ZipUtils;
 import org.apache.commons.io.FileUtils;
 
 import org.keycloak.common.Version;
+import org.keycloak.quarkus.runtime.Environment;
 
 public final class RawKeycloakDistribution implements KeycloakDistribution {
 
@@ -266,7 +269,15 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
             Path path = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
 
             if (!inited || (reCreate || !path.toFile().exists())) {
-                FileUtils.deleteDirectory(path.toFile());
+                if (!Environment.isWindows()) {
+                    FileUtils.deleteDirectory(path.toFile());
+                } else {
+                    try (Stream<Path> walk = Files.walk(path)) {
+                        walk.sorted(Comparator.reverseOrder())
+                                .map(Path::toFile)
+                                .forEach(File::delete);
+                    }
+                }
                 ZipUtils.unzip(distFile.toPath(), distRootPath);
             }
 

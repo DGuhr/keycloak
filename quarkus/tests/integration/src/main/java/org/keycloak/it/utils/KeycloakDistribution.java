@@ -11,6 +11,7 @@ import static org.keycloak.quarkus.runtime.Environment.LAUNCH_MODE;
 public interface KeycloakDistribution {
 
     String SCRIPT_CMD = Environment.isWindows() ? "kc.bat" : "kc.sh";
+    String SCRIPT_CMD_INVOKABLE = Environment.isWindows() ? SCRIPT_CMD : "./"+SCRIPT_CMD;
 
     void start(List<String> arguments);
 
@@ -36,7 +37,7 @@ public interface KeycloakDistribution {
             commands.add("\"\"");
         }
 
-        commands.add(SCRIPT_CMD);
+        commands.add(SCRIPT_CMD_INVOKABLE);
 
         if (this.isDebug()) {
             commands.add("--debug");

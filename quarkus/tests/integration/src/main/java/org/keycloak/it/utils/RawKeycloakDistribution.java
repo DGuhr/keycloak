@@ -275,8 +275,13 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                 } else {
                     try (Stream<Path> walk = Files.walk(path)) {
                         walk.sorted(Comparator.reverseOrder())
-                                .map(Path::toFile)
-                                .forEach(File::delete);
+                                .forEach(s -> {
+                                    try {
+                                        Files.delete(s);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                     }
                 }
 

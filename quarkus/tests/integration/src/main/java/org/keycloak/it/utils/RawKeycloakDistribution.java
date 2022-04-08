@@ -266,22 +266,24 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
             }
             distRootPath.toFile().mkdirs();
             String distDirName = distFile.getName().replace("keycloak-server-x-dist", "keycloak.x");
-            Path path = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
+            Path dPath = distRootPath.resolve(distDirName.substring(0, distDirName.lastIndexOf('.')));
 
-            if (!inited || (reCreate || !path.toFile().exists())) {
+            if (!inited || (reCreate || !dPath.toFile().exists())) {
 
                 if (!Environment.isWindows()) {
-                    FileUtils.deleteDirectory(path.toFile());
+                    FileUtils.deleteDirectory(dPath.toFile());
                 } else {
-                    try (Stream<Path> walk = Files.walk(path)) {
-                        walk.sorted(Comparator.reverseOrder())
-                                .forEach(s -> {
-                                    try {
-                                        Files.delete(s);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
+                    if (Files.exists(dPath)) {
+                        try (Stream<Path> walk = Files.walk(dPath)) {
+                            walk.sorted(Comparator.reverseOrder())
+                                    .forEach(s -> {
+                                        try {
+                                            Files.delete(s);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
+                        }
                     }
                 }
 
@@ -289,13 +291,13 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
             }
 
             // make sure script is executable
-            if (!path.resolve("bin").resolve(SCRIPT_CMD).toFile().setExecutable(true)) {
+            if (!dPath.resolve("bin").resolve(SCRIPT_CMD).toFile().setExecutable(true)) {
                 throw new RuntimeException("Cannot set " + SCRIPT_CMD + " executable");
             }
 
             inited = true;
 
-            return path;
+            return dPath;
         } catch (Exception cause) {
             throw new RuntimeException("Failed to prepare distribution", cause);
         }

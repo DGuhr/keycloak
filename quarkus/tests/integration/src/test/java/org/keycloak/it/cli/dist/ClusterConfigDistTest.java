@@ -69,12 +69,11 @@ public class ClusterConfigDistTest {
     }
 
     @Test
-    @Launch({ "start", "--auto-build", "--http-enabled=true", "--hostname-strict false" })
+    @Launch({ "start", "--auto-build", "--http-enabled=true", "--hostname-strict=false" })
     void testStartDefaultsToClustering(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
         cliResult.assertStarted();
         cliResult.assertClusteredCache();
-        assertTrue(cliResult.getOutput().contains("org.jgroups.protocols.UDP"));
     }
 
     @Test

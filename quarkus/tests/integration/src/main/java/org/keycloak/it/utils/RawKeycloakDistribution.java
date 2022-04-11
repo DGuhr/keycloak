@@ -115,10 +115,9 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
                 CompletableFuture<ProcessHandle> onExit = keycloak.toHandle().onExit();
                 keycloak.destroy();
-                onExit.get();
-
                 exitCode = keycloak.exitValue();
-                System.out.println("Exit value: " + exitCode);
+
+                onExit.join();
 
             } catch (Exception cause) {
                 if (Environment.isWindows()) {

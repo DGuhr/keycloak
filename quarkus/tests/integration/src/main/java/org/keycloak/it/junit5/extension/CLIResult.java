@@ -20,6 +20,8 @@ package org.keycloak.it.junit5.extension;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.testcontainers.shaded.org.hamcrest.MatcherAssert.assertThat;
+import static org.testcontainers.shaded.org.hamcrest.Matchers.containsString;
 
 import java.util.List;
 
@@ -87,7 +89,7 @@ public interface CLIResult extends LaunchResult {
     }
 
     default void assertMessage(String message) {
-        assertTrue(getOutput().contains(message));
+        assertThat(getOutput(), containsString(message));
     }
 
     default void assertBuild() {

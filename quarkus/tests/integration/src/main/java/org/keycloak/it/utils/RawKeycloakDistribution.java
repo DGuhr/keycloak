@@ -280,7 +280,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                                         try {
                                             Files.delete(s);
                                         } catch (IOException e) {
-                                            e.printStackTrace();
+                                            throw new RuntimeException("Could not delete temp directory for distribution! " + e.getMessage());
                                         }
                                     });
                         }

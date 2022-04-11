@@ -38,9 +38,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -107,16 +106,48 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
     public void stop() {
         if (isRunning()) {
             try {
+
+                if (Environment.isWindows()) {
+                    //On windows we're executing cmd.exe as "keycloak", so tha java process is an actual child process
+                    // we have to kill first.
+                    killChildProcessesOnWindows(false);
+                }
+
+                CompletableFuture<ProcessHandle> onExit = keycloak.toHandle().onExit();
                 keycloak.destroy();
-                keycloak.waitFor(10, TimeUnit.SECONDS);
+                onExit.get();
+
                 exitCode = keycloak.exitValue();
+                System.out.println("Exit value: " + exitCode);
+
             } catch (Exception cause) {
+                if (Environment.isWindows()) {
+                    try {
+                        killChildProcessesOnWindows(true);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Failed to stop the server", e);
+                    }
+                }
                 keycloak.destroyForcibly();
                 throw new RuntimeException("Failed to stop the server", cause);
             }
         }
 
         shutdownOutputExecutor();
+    }
+
+    private void killChildProcessesOnWindows(boolean isForced) throws InterruptedException, ExecutionException {
+        for (var childProcessHandle : keycloak.children().collect(Collectors.toList())) {
+            CompletableFuture<ProcessHandle> onExit = childProcessHandle.onExit();
+
+            if (isForced) {
+                childProcessHandle.destroyForcibly();
+            } else {
+                childProcessHandle.destroy();
+            }
+
+            onExit.get();
+        }
     }
 
     @Override
@@ -273,18 +304,7 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                 if (!Environment.isWindows()) {
                     FileUtils.deleteDirectory(dPath.toFile());
                 } else {
-                    if (Files.exists(dPath)) {
-                        try (Stream<Path> walk = Files.walk(dPath)) {
-                            walk.sorted(Comparator.reverseOrder())
-                                    .forEach(s -> {
-                                        try {
-                                            Files.delete(s);
-                                        } catch (IOException e) {
-                                            throw new RuntimeException("Could not delete temp directory for distribution! " + e.getMessage());
-                                        }
-                                    });
-                        }
-                    }
+                    deleteTempFilesOnWindows(dPath);
                 }
 
                 ZipUtils.unzip(distFile.toPath(), distRootPath);
@@ -300,6 +320,23 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
             return dPath;
         } catch (Exception cause) {
             throw new RuntimeException("Failed to prepare distribution", cause);
+        }
+    }
+
+    private void deleteTempFilesOnWindows(Path dPath) {
+        if (Files.exists(dPath)) {
+            try (Stream<Path> walk = Files.walk(dPath)) {
+                walk.sorted(Comparator.reverseOrder())
+                        .forEach(s -> {
+                            try {
+                                Files.delete(s);
+                            } catch (IOException e) {
+                                throw new RuntimeException("Could not delete temp directory for distribution", e);
+                            }
+                        });
+            } catch (IOException e) {
+                throw new RuntimeException("Could not traverse temp directory for distribution to delete files", e);
+            }
         }
     }
 

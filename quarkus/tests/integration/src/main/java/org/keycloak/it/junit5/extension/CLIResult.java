@@ -41,6 +41,11 @@ public interface CLIResult extends LaunchResult {
             }
 
             @Override
+            public String getErrorOutput() {
+                return String.join("\n", errStream).replace("\r","");
+            }
+
+            @Override
             public List<String> getErrorStream() {
                 return errStream;
             }

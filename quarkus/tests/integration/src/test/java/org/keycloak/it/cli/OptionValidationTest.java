@@ -69,7 +69,7 @@ public class OptionValidationTest {
         CLIResult cliResult = (CLIResult) result;
         assertEquals("Unknown option: '--db-pasword'\n" +
                 "Possible solutions: --db-username, --db-url-host, --db-pool-min-size, --db-password, --db-url-properties, --db-url-database, --db-schema, --db-pool-max-size, --db-pool-initial-size, --db-url\n" +
-                "Try 'kc.sh start --help' for more information on the available options.", cliResult.getErrorOutput());
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", cliResult.getErrorOutput());
     }
 
     @Test
@@ -78,6 +78,6 @@ public class OptionValidationTest {
         CLIResult cliResult = (CLIResult) result;
         assertEquals("Unknown option: '--db-pasword'\n" +
                 "Possible solutions: --db-username, --db-url-host, --db-pool-min-size, --db-password, --db-url-properties, --db-url-database, --db-schema, --db-pool-max-size, --db-pool-initial-size, --db-url\n" +
-                "Try 'kc.sh start --help' for more information on the available options.", cliResult.getErrorOutput());
+                "Try '" + KeycloakDistribution.SCRIPT_CMD + " start --help' for more information on the available options.", cliResult.getErrorOutput());
     }
 }

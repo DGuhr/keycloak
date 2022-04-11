@@ -117,7 +117,7 @@ public interface CLIResult extends LaunchResult {
     default void assertJsonLogDefaultsApplied() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        String[] splittedOutput = getOutput().split(System.lineSeparator());
+        String[] splittedOutput = getOutput().split("\n");
 
         int counter = 0;
 

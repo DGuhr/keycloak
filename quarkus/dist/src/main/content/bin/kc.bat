@@ -56,13 +56,16 @@ if not "%KEY:~0,2%"=="--" if "%KEY:~0,2%"=="-D" (
 if not "%KEY:~0,2%"=="--" if not "%KEY:~0,1%"=="-" (
   set "CONFIG_ARGS=%CONFIG_ARGS% %KEY%"
 )
-if "%KEY:~0,2%"=="--" if not "%KEY:~0,2%"=="-D" if "%KEY:~0,1%"=="-" (
+SET RES=False
+if "%KEY:~0,2%"=="--" SET RES=True
+if not "%KEY:~0,2%"=="-D" SET RES=True
+if "%KEY:~0,1%"=="-" SET RES=True
+if "%RES%"=="True" (
   if "%~2"=="" (
     set "CONFIG_ARGS=%CONFIG_ARGS% %KEY%"
   ) else (
     set "CONFIG_ARGS=%CONFIG_ARGS% %KEY% %~2%"
   )
-
   shift
 )
 shift

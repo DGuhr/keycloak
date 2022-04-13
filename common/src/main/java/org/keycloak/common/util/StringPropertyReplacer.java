@@ -176,9 +176,12 @@ public final class StringPropertyReplacer
                         // check from the properties
                         if (resolver != null)
                             value = resolver.resolve(key);
-                        else
+                        else {
                             value = System.getProperty(key);
-
+                            if (value == null) {
+                                value = System.getenv(key);
+                            }
+                        }
                         if (value == null)
                         {
                             // Check for a default value ${key:default}
@@ -188,8 +191,12 @@ public final class StringPropertyReplacer
                                 String realKey = key.substring(0, colon);
                                 if (resolver != null)
                                     value = resolver.resolve(realKey);
-                                else
+                                else {
                                     value = System.getProperty(realKey);
+                                    if(value == null) {
+                                        value = System.getenv(realKey);
+                                    }
+                                }
 
                                 if (value == null)
                                 {
@@ -281,8 +288,12 @@ public final class StringPropertyReplacer
                 String key1 = key.substring(0, comma);
                 if (resolver != null)
                     value = resolver.resolve(key1);
-                else
+                else {
                     value = System.getProperty(key1);
+                    if (value == null) {
+                        value = System.getenv(key1);
+                    }
+                }
             }
             // Check the second part, if there is one and first lookup failed
             if (value == null && comma < key.length() - 1)
@@ -290,8 +301,12 @@ public final class StringPropertyReplacer
                 String key2 = key.substring(comma + 1);
                 if (resolver != null)
                     value = resolver.resolve(key2);
-                else
+                else {
                     value = System.getProperty(key2);
+                    if (value == null) {
+                        value = System.getenv(key2);
+                    }
+                }
             }
         }
         // Return whatever we've found or null

@@ -448,7 +448,6 @@ jobs:
 #          retention-days: 14
 #          path: reports-quarkus-tests.zip
 #          if-no-files-found: ignore
-
   quarkus-tests-windows:
     name: Quarkus Tests on Windows
     needs: build
@@ -463,49 +462,49 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.DEFAULT_JDK_VERSION }}
           cahe: 'maven'
-        - name: Cleanup org.keycloak artifacts
-          run: rm -rf ~/.m2/repository/org/keycloak >/dev/null || true
+      - name: Cleanup org.keycloak artifacts
+        run: rm -rf ~/.m2/repository/org/keycloak >/dev/null || true
+      - name: Download built keycloak
+        id: download-keycloak
+        uses: actions/download-artifact@v3
+        with:
+          path: ~/.m2/repository/org/keycloak/
+          name: keycloak-artifacts.zip
 
-        - name: Download built keycloak
-          id: download-keycloak
-          uses: actions/download-artifact@v3
-          with:
-            path: ~/.m2/repository/org/keycloak/
-            name: keycloak-artifacts.zip
-        -  name: Update maven settings
-          run: mkdir -p ~/.m2 ; cp .github/settings.xml ~/.m2/
+      - name: Update maven settings
+        run: mkdir -p ~/.m2 ; cp .github/settings.xml ~/.m2/
 
-        - name: Prepare the local distribution archives
-          run: ./mvnw clean install -DskipTests -Pdistribution
+      - name: Prepare the local distribution archives
+        run: ./mvnw clean install -DskipTests -Pdistribution
 
-        - name: Run Quarkus Integration Tests
-          run: |
-            ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml | misc/log/trimmer.sh
-            TEST_RESULT=${PIPESTATUS[0]}
-            find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
-            exit $TEST_RESULT
+      - name: Run Quarkus Integration Tests
+        run: |
+          ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml | misc/log/trimmer.sh
+          TEST_RESULT=${PIPESTATUS[0]}
+          find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
+          exit $TEST_RESULT
 
-        - name: Run Quarkus Storage Tests
-          run: |
-            ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml -Ptest-database -Dtest=PostgreSQLStartDatabaseTest | misc/log/trimmer.sh
-            TEST_RESULT=${PIPESTATUS[0]}
-            find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
-            exit $TEST_RESULT
+      - name: Run Quarkus Storage Tests
+        run: |
+          ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml -Ptest-database -Dtest=PostgreSQLStartDatabaseTest | misc/log/trimmer.sh
+          TEST_RESULT=${PIPESTATUS[0]}
+          find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
+          exit $TEST_RESULT
 
-        - name: Run Quarkus Tests in Docker
-          run: |
-            ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml -Dkc.quarkus.tests.dist=docker | misc/log/trimmer.sh
-            TEST_RESULT=${PIPESTATUS[0]}
-            exit $TEST_RESULT
+      - name: Run Quarkus Tests in Docker
+        run: |
+          ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml -Dkc.quarkus.tests.dist=docker | misc/log/trimmer.sh
+          TEST_RESULT=${PIPESTATUS[0]}
+          exit $TEST_RESULT
 
-        - name: Quarkus test reports
-          uses: actions/upload-artifact@v3
-          if: failure()
-          with:
-            name: reports-quarkus-tests
-            retention-days: 14
-            path: reports-quarkus-tests.zip
-            if-no-files-found: ignore
+      - name: Quarkus test reports
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: reports-quarkus-tests
+          retention-days: 14
+          path: reports-quarkus-tests.zip
+          if-no-files-found: ignore
 
 #  quickstarts-tests:
 #    name: Quickstarts Tests

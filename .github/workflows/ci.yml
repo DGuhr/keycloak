@@ -478,8 +478,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.DEFAULT_JDK_VERSION }}
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      #- name: Setup tmate session
+      #  uses: mxschmitt/action-tmate@v3
       - name: Update maven settings
         run: mkdir -p ~/.m2 ; copy .github/settings.xml ~/.m2/
 

@@ -481,7 +481,7 @@ jobs:
       #- name: Setup tmate session
       #  uses: mxschmitt/action-tmate@v3
       - name: Update maven settings
-        run: mkdir -p ~/.m2 ; copy .github/settings.xml ~/.m2/
+        run: copy .github/settings.xml ~/.m2/
 
       - name: Prepare the local distribution archives
         run: mvn clean install -DskipTests -Pdistribution

@@ -27,17 +27,23 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ env.DEFAULT_JDK_VERSION }}
-          cache: 'maven'
       - name: Update maven settings
         run: mkdir -p ~/.m2 ; cp .github/settings.xml ~/.m2/
+      - name: Cache Maven packages
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.m2/repository
+          key: cache-2-${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: cache-1-${{ runner.os }}-m2
 
       - name: Build Keycloak
-        run: |
-           ./mvnw clean install -nsu -B -e -DskipTests -Pdistribution
-           ./mvnw clean install -nsu -B -e -f testsuite/integration-arquillian/servers/auth-server -Pauth-server-quarkus
-           ./mvnw clean install -nsu -B -e -f testsuite/integration-arquillian/servers/auth-server -Pauth-server-wildfly
-           ./mvnw clean install -nsu -B -e -f testsuite/integration-arquillian/servers/auth-server -Pauth-server-undertow
-           ./mvnw clean install -nsu -B -e -f testsuite/integration-arquillian/servers/cache-server -Pcache-server-infinispan
+        run: mvn clean install -nsu -B -e -DskipTests -Pdistribution
+           # mvn clean install -nsu -B -e -f testsuite/integration-arquillian/servers/auth-server -Pauth-server-quarkus
+           # mvn clean install -nsu -B -e -f testsuite/integration-arquillian/servers/auth-server -Pauth-server-wildfly
+           # mvn clean install -nsu -B -e -f testsuite/integration-arquillian/servers/auth-server -Pauth-server-undertow
+           # mvn clean install -nsu -B -e -f testsuite/integration-arquillian/servers/cache-server -Pcache-server-infinispan
 
       - name: Store Keycloak artifacts
         id: store-keycloak
@@ -459,41 +465,44 @@ jobs:
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
-          distribution: 'temurin'
-          java-version: ${{ env.DEFAULT_JDK_VERSION }}
-          cahe: 'maven'
+          path: ~/.m2/repository
+          key: cache-2-${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: cache-1-${{ runner.os }}-m2
       - name: Cleanup org.keycloak artifacts
-        run: rmdir /s /q ~/.m2/repository/org/keycloak
+        run: rmdir ~/.m2/repository/org/keycloak /s /q
       - name: Download built keycloak
         id: download-keycloak
         uses: actions/download-artifact@v3
         with:
           path: ~/.m2/repository/org/keycloak/
           name: keycloak-artifacts.zip
-
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.DEFAULT_JDK_VERSION }}
       - name: Update maven settings
         run: mkdir -p ~/.m2 ; cp .github/settings.xml ~/.m2/
 
       - name: Prepare the local distribution archives
-        run: ./mvnw clean install -DskipTests -Pdistribution
+        run: mvn clean install -DskipTests -Pdistribution
 
       - name: Run Quarkus Integration Tests
         run: |
-          ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml | misc/log/trimmer.sh
+          mvn clean install -nsu -B -f quarkus/tests/pom.xml | misc/log/trimmer.sh
           TEST_RESULT=${PIPESTATUS[0]}
           find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
           exit $TEST_RESULT
 
       - name: Run Quarkus Storage Tests
         run: |
-          ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml -Ptest-database -Dtest=PostgreSQLStartDatabaseTest | misc/log/trimmer.sh
+          mvn clean install -nsu -B -f quarkus/tests/pom.xml -Ptest-database -Dtest=PostgreSQLStartDatabaseTest | misc/log/trimmer.sh
           TEST_RESULT=${PIPESTATUS[0]}
           find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
           exit $TEST_RESULT
 
       - name: Run Quarkus Tests in Docker
         run: |
-          ./mvnw clean install -nsu -B -f quarkus/tests/pom.xml -Dkc.quarkus.tests.dist=docker | misc/log/trimmer.sh
+          mvn clean install -nsu -B -f quarkus/tests/pom.xml -Dkc.quarkus.tests.dist=docker | misc/log/trimmer.sh
           TEST_RESULT=${PIPESTATUS[0]}
           exit $TEST_RESULT
 

@@ -468,8 +468,9 @@ jobs:
           path: ~/.m2/repository
           key: cache-2-${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: cache-1-${{ runner.os }}-m2
-      - name: Cleanup org.keycloak artifacts
-        run: IF EXIST ~/.m2/repository/org/keycloak DEL /S ~/.m2/repository/org/keycloak
+      # commented out for now, look later
+      #- name: Cleanup org.keycloak artifacts
+      #  run: IF EXIST ~/.m2/repository/org/keycloak DEL /S ~/.m2/repository/org/keycloak
       - name: Download built keycloak
         id: download-keycloak
         uses: actions/download-artifact@v3
@@ -481,7 +482,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ env.DEFAULT_JDK_VERSION }}
       - name: Update maven settings
-        run: mkdir -p ~/.m2 ; cp .github/settings.xml ~/.m2/
+        run: mkdir ~/.m2 ; copy .github/settings.xml ~/.m2/
 
       - name: Prepare the local distribution archives
         run: mvn clean install -DskipTests -Pdistribution

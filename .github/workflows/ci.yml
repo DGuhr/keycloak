@@ -469,7 +469,7 @@ jobs:
           key: cache-2-${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: cache-1-${{ runner.os }}-m2
       - name: Cleanup org.keycloak artifacts
-        run: DEL /S /Q ~/.m2/repository/org/keycloak
+        run: IF EXIST ~/.m2/repository/org/keycloak DEL /S ~/.m2/repository/org/keycloak
       - name: Download built keycloak
         id: download-keycloak
         uses: actions/download-artifact@v3

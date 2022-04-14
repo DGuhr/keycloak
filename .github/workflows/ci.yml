@@ -463,7 +463,7 @@ jobs:
           java-version: ${{ env.DEFAULT_JDK_VERSION }}
           cahe: 'maven'
       - name: Cleanup org.keycloak artifacts
-        run: rm -rf ~/.m2/repository/org/keycloak >/dev/null || true
+        run: rmdir /s /q ~/.m2/repository/org/keycloak
       - name: Download built keycloak
         id: download-keycloak
         uses: actions/download-artifact@v3

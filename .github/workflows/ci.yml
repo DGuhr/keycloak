@@ -486,19 +486,19 @@ jobs:
         run: mvn clean install -DskipTests -Pdistribution
 
       - name: Run Quarkus Integration Tests
-        run: mvn clean install -nsu -B -f quarkus/tests/pom.xml
-          # TEST_RESULT=${PIPESTATUS[0]}
+        run: mvn clean install -nsu -B -f quarkus/tests/pom.xml & misc/log/trimmer.bat
+          TEST_RESULT=${PIPESTATUS[0]}
           # find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
-        # exit $TEST_RESULT
+          exit $TEST_RESULT
 
-    #      - name: Quarkus test reports
-    #        uses: actions/upload-artifact@v3
-    #        if: failure()
-    #        with:
-    #          name: reports-quarkus-tests
-    #          retention-days: 14
-    #          path: reports-quarkus-tests.zip
-    #          if-no-files-found: ignore
+      - name: Quarkus test reports
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: reports-quarkus-tests
+          retention-days: 14
+          path: reports-quarkus-tests.zip
+          if-no-files-found: ignore
 
   quickstarts-tests:
     name: Quickstarts Tests

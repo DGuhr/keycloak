@@ -488,8 +488,8 @@ jobs:
       - name: Run Quarkus Integration Tests
         run: mvn clean install -nsu -B -f quarkus/tests/pom.xml & misc/log/trimmer.bat
           TEST_RESULT=${PIPESTATUS[0]}
-          # find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@
           exit $TEST_RESULT
+          # find . -path '*/target/surefire-reports/*.xml' | zip -q reports-quarkus-tests.zip -@ -- todo: move one line up and fix.
 
       - name: Quarkus test reports
         uses: actions/upload-artifact@v3

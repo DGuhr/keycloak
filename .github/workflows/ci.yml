@@ -486,7 +486,12 @@ jobs:
 
       - name: Run Quarkus Integration Tests on Windows
         shell: pwsh
-        run: mvn clean install -nsu -B -f quarkus/tests/pom.xml -Dtest=HelpCommandTest -Dtest=HelpCommandDistTest ; misc/log/trimmer.bat; $TEST_RESULT=${PIPESTATUS[0]} ; keycloak/.github/scripts/windows/archive-reports.ps1; exit $TEST_RESULT
+        run:
+          mvn clean install -nsu -B -f quarkus/tests/pom.xml -Dtest=HelpCommandTest -Dtest=HelpCommandDistTest ; 
+          misc/log/trimmer.bat;
+          $TEST_RESULT=${PIPESTATUS[0]} ; 
+          $pwd\keycloak\.github\scripts\windows\archive-reports.ps1 ; 
+          exit $TEST_RESULT
 
       - name: Quarkus test reports
         uses: actions/upload-artifact@v3

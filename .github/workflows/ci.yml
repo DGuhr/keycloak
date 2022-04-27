@@ -481,14 +481,14 @@ jobs:
       - name: Update maven settings
         run: copy .github/settings.xml ~/.m2/
 
-      - name: Prepare the local distribution archives
-        run: mvn clean install -DskipTests -Pdistribution
+      #- name: Prepare the local distribution archives
+      #  run: mvn clean install -DskipTests -Pdistribution
 
       - name: Run Quarkus Integration Tests on Windows
         shell: pwsh
         run:
           mvn clean install -nsu -B -f quarkus/tests/pom.xml -Dtest=HelpCommandTest -Dtest=HelpCommandDistTest ; 
-          misc/log/trimmer.bat;
+          misc/log/trimmer.bat ;
           $TEST_RESULT=${PIPESTATUS[0]} ; 
           $pwd\keycloak\.github\scripts\windows\archive-reports.ps1 ; 
           exit $TEST_RESULT

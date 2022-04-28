@@ -100,7 +100,7 @@ public abstract class ClusterOperatorTest {
     List<HasMetadata> hasMetadata = k8sclient.load(new FileInputStream(TARGET_KUBERNETES_GENERATED_YML_FOLDER + deploymentTarget + ".yml"))
             .inNamespace(namespace).get();
 
-    hasMetadata.stream()
+    hasMetadata
             .forEach(c -> {
               Log.info("processing part : " + c.getKind() + "--" + c.getMetadata().getName() + " -- " + namespace);
               k8sclient.resource(c).inNamespace(namespace).createOrReplace();

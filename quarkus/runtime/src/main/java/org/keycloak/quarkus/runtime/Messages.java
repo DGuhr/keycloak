@@ -71,4 +71,8 @@ public final class Messages {
     public static Throwable notRecognizedValueInList(String key, String values, String expected) {
         return new IllegalStateException("Invalid values in list for key: " + key + " Values: " + values + ". Possible values are a combination of: " + expected);
     }
+
+    public static Throwable wrongPort(String message) {
+        return new IllegalStateException(message);
+    }
 }

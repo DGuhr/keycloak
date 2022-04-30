@@ -88,8 +88,11 @@ public final class ExecutionExceptionHandler implements CommandLine.IExecutionEx
             do {
                 if (cause.getMessage() != null) {
                     logError(errorWriter, String.format("ERROR: %s", cause.getMessage()));
+                    printErrorHints(errorWriter, cause);
+                    //fail on first exception for now so no multiple sames are thrown.
+                    // do we actually have any case where we throw more than one? this shuld be refactored
+                    break;
                 }
-                printErrorHints(errorWriter, cause);
             } while ((cause = cause.getCause()) != null);
         }
 

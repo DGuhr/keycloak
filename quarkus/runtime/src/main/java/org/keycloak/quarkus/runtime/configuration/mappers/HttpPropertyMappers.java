@@ -48,6 +48,7 @@ final class HttpPropertyMappers {
                         .description("The used HTTP port.")
                         .paramLabel("port")
                         .useType(PortConfiguration.class)
+                        .transformer(HttpPropertyMappers::validatePort)
                         .build(),
                 builder().from("https-port")
                         .to("quarkus.http.ssl-port")
@@ -122,6 +123,15 @@ final class HttpPropertyMappers {
                         .build()
 
         };
+    }
+
+    private static String validatePort(String input, ConfigSourceInterceptorContext configSourceInterceptorContext) {
+        try {
+            PortConfiguration.validate(input);
+        } catch (IllegalArgumentException ex) {
+            addInitializationException(Messages.wrongPort(ex.getMessage()));
+        }
+        return input;
     }
 
     private static String getHttpEnabledTransformer(String value, ConfigSourceInterceptorContext context) {

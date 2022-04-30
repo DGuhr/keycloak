@@ -30,6 +30,7 @@ import org.keycloak.platform.Platform;
 import org.keycloak.platform.PlatformProvider;
 import org.keycloak.quarkus.runtime.InitializationException;
 import org.keycloak.quarkus.runtime.Environment;
+import io.quarkus.runtime.configuration.ConfigurationException;
 
 import io.quarkus.runtime.Quarkus;
 
@@ -39,7 +40,7 @@ public class QuarkusPlatform implements PlatformProvider {
 
     public static void addInitializationException(Throwable throwable) {
         QuarkusPlatform platform = (QuarkusPlatform) Platform.getPlatform();
-        platform.addDeferredException(throwable);
+        platform.addDeferredException(new ConfigurationException(throwable));
     }
 
     /**
@@ -49,15 +50,21 @@ public class QuarkusPlatform implements PlatformProvider {
      * 
      * @throws InitializationException the exception holding all errors during startup.
      */
-    public static void exitOnError() throws InitializationException {
+    public static void exitOnError() throws ConfigurationException {
         QuarkusPlatform platform = (QuarkusPlatform) Platform.getPlatform();
         
         // Check if we had any exceptions during initialization phase
         if (!platform.getDeferredExceptions().isEmpty()) {
-            InitializationException quarkusException = new InitializationException();
-            for (Throwable inner : platform.getDeferredExceptions()) {
-                quarkusException.addSuppressed(inner);
+            ConfigurationException quarkusException = new ConfigurationException("Error in configuration.");
+
+            if(platform.getDeferredExceptions().size() > 1) {
+                for (Throwable inner : platform.getDeferredExceptions()) {
+                    quarkusException.addSuppressed(inner);
+                }
+            } else {
+                quarkusException = new ConfigurationException(platform.getDeferredExceptions().get(0));
             }
+
             // reset this instance, mainly deferred exceptions, so that the subsequent starts do not fail due to previous errors
             // this is mainly important when the server is running in test mode
             platform.reset();

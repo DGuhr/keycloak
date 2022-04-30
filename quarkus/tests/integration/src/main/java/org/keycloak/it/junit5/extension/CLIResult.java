@@ -134,6 +134,13 @@ public interface CLIResult extends LaunchResult {
         }
     }
 
-    default void assertInvalidPort() { assertError("Must be a port number between 0 and 65535");};
+    default void assertInvalidPort() {
+        assertError("Must be a port number between 0 and 65535");
+    };
+
+    default void assertInvalidPortAtStartUp() {
+        //check our errorhandling, we're writing to wrong stream..
+        assertMessage("Must be a port number between 0 and 65535");
+    };
 
 }

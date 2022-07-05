@@ -48,6 +48,9 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
     private static final Logger log = Logger.getLogger(KeycloakQuarkusServerDeployableContainer.class);
 
+    private final String SCRIPT_CMD = SystemUtils.IS_OS_WINDOWS ? "kc.bat" : "kc.sh";
+    private final String SCRIPT_CMD_INVOKABLE = SystemUtils.IS_OS_WINDOWS ? SCRIPT_CMD : "./" + SCRIPT_CMD;
+
     private KeycloakQuarkusConfiguration configuration;
     private Process container;
     private static AtomicBoolean restart = new AtomicBoolean();
@@ -130,7 +133,7 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     private Process startContainer() throws IOException {
         ProcessBuilder pb = new ProcessBuilder(getProcessCommands());
         File wrkDir = configuration.getProvidersPath().resolve("bin").toFile();
-        ProcessBuilder builder = pb.directory(wrkDir).inheritIO().redirectErrorStream(true);
+        ProcessBuilder builder = pb.directory(wrkDir);
 
         String javaOpts = configuration.getJavaOpts();
 
@@ -150,8 +153,14 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
     private String[] getProcessCommands() {
         List<String> commands = new ArrayList<>();
-        commands.add(getCommand());
-        commands.add("-v");
+
+        if(SystemUtils.IS_OS_WINDOWS) {
+            commands.add(configuration.getProvidersPath().resolve("bin") + File.separator + SCRIPT_CMD_INVOKABLE);
+        } else {
+            commands.add(SCRIPT_CMD_INVOKABLE);
+        }
+
+        //commands.add("-v");
         commands.add("start");
         commands.add("--http-enabled=true");
 
@@ -295,13 +304,6 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     public void restartServer() throws Exception {
         stop();
         start();
-    }
-
-    private static String getCommand() {
-        if (SystemUtils.IS_OS_WINDOWS) {
-            return "kc.bat";
-        }
-        return "./kc.sh";
     }
 
     public List<String> getAdditionalBuildArgs() {

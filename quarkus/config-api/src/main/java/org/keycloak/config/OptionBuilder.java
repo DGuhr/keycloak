@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class OptionBuilder<T> {
@@ -17,6 +16,7 @@ public class OptionBuilder<T> {
     private String description;
     private Optional<T> defaultValue;
     private List<String> expectedValues;
+    private OptionStatus optionStatus;
 
     public OptionBuilder(String key, Class<T> type) {
         this.type = type;
@@ -31,6 +31,11 @@ public class OptionBuilder<T> {
         if (Boolean.class.equals(type)) {
             expectedStringValues(Boolean.TRUE.toString(), Boolean.FALSE.toString());
         }
+
+        optionStatus = new OptionStatusBuilder()
+                .isDeprecated(false)
+                .isPreview(false)
+                .build();
     }
 
     public OptionBuilder(String key, Class<T> type, Class<T> auxiliaryType) {
@@ -46,6 +51,11 @@ public class OptionBuilder<T> {
         if (Boolean.class.equals(type)) {
             expectedStringValues(Boolean.TRUE.toString(), Boolean.FALSE.toString());
         }
+        optionStatus = new OptionStatusBuilder()
+                .status(ConfigSupportLevel.SUPPORTED)
+                .isPreview(false)
+                .isDeprecated(false)
+                .build();
     }
 
     public OptionBuilder<T> category(OptionCategory category) {
@@ -105,9 +115,9 @@ public class OptionBuilder<T> {
 
     public Option<T> build() {
         if (auxiliaryType != null) {
-            return new MultiOption<T>(type, auxiliaryType, key, category, hidden, build, description, defaultValue, expectedValues);
+            return new MultiOption<T>(type, auxiliaryType, key, category, hidden, build, description, defaultValue, expectedValues, optionStatus);
         } else {
-            return new Option<T>(type, key, category, hidden, build, description, defaultValue, expectedValues);
+            return new Option<T>(type, key, category, hidden, build, description, defaultValue, expectedValues, optionStatus);
         }
     }
 

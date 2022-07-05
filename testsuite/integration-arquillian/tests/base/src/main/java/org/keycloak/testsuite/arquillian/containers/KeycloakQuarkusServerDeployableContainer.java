@@ -133,7 +133,7 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     private Process startContainer() throws IOException {
         ProcessBuilder pb = new ProcessBuilder(getProcessCommands());
         File wrkDir = configuration.getProvidersPath().resolve("bin").toFile();
-        ProcessBuilder builder = pb.directory(wrkDir);
+        ProcessBuilder builder = pb.directory(wrkDir).inheritIO().redirectErrorStream(true);;
 
         String javaOpts = configuration.getJavaOpts();
 
@@ -162,8 +162,11 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
         //commands.add("-v");
         commands.add("start");
+        //TODO: use either a firstStart flag or the configure.xml ant exec task that is only used for unix (not recommended) - the following 4 commands are a sledgehammer approach and should not make it into another iteration, but it works
+        commands.add("--auto-build");
+        commands.add("--http-relative-path=/auth");
         commands.add("--http-enabled=true");
-
+        commands.add("--cache=local");
         if (Boolean.parseBoolean(System.getProperty("auth.server.debug", "false"))) {
             commands.add("--debug");
             if (configuration.getDebugPort() > 0) {

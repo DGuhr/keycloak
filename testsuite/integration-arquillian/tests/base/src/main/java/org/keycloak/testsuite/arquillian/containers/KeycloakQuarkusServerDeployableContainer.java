@@ -14,15 +14,20 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -81,10 +86,34 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
     @Override
     public void stop() throws LifecycleException {
-        container.destroy();
         try {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                // On Windows, we're executing kc.bat in a runtime as "keycloak",
+                // so tha java process is an actual child process in a process tree that
+                // we have to kill first before parent.
+                /*try {
+                    Runtime.getRuntime().exec(new String[]{"cmd", "/c", "taskkill /fi \"WINDOWTITLE eq "+SCRIPT_CMD_INVOKABLE+"*\" /t /f"});
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to stop the server", e);
+                }*/
+                killChildProcessesOnWindows(false);
+            }
+
+            container.destroy();
             container.waitFor(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
+            if (SystemUtils.IS_OS_WINDOWS) {
+                /* try {
+                    killChildProcessesOnWindows(true);
+                } catch (Exception ex) {
+                    throw new RuntimeException("Failed to stop the server", ex);
+                }*/
+                /*try {
+                    Runtime.getRuntime().exec(new String[]{"..."});
+                } catch (IOException ex) {
+                    throw new RuntimeException("Failed to stop the server", ex);
+                }*/
+            }
             container.destroyForcibly();
         }
     }
@@ -132,7 +161,7 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     private Process startContainer() throws IOException {
         ProcessBuilder pb = new ProcessBuilder(getProcessCommands());
         File wrkDir = configuration.getProvidersPath().resolve("bin").toFile();
-        ProcessBuilder builder = pb.directory(wrkDir).inheritIO().redirectErrorStream(true);;
+        ProcessBuilder builder = pb.directory(wrkDir).inheritIO().redirectErrorStream(true);
 
         String javaOpts = configuration.getJavaOpts();
 
@@ -144,7 +173,11 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
         builder.environment().put("KEYCLOAK_ADMIN_PASSWORD", "admin");
 
         if (restart.compareAndSet(false, true)) {
-            FileUtils.deleteDirectory(configuration.getProvidersPath().resolve("data").toFile());
+            if (SystemUtils.IS_OS_WINDOWS) {
+                deleteTempFilesOnWindows(configuration.getProvidersPath().resolve("data"));
+            } else {
+                FileUtils.deleteDirectory(configuration.getProvidersPath().resolve("data").toFile());
+            }
         }
 
         return builder.start();
@@ -164,7 +197,8 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
         //to not rely on ANT... TODO: make sure this is wanted. imo it should.
         if (SystemUtils.IS_OS_WINDOWS && firstStart.compareAndSet(true, false)) {
-            log.infof("===== FIRST START: ADDING AUTOBUILD AND PATH TO THE MIX =====");
+            log.infof("===== FIRST START: Re-augmenting... =====");
+            log.infof("System: kc.home.dir: " + System.getProperty("kc.home.dir"));
             commands.add("--auto-build");
             commands.add("--http-relative-path=/auth");
             commands.add("--cache=local");
@@ -297,6 +331,40 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
     private long getStartTimeout() {
         return TimeUnit.SECONDS.toMillis(configuration.getStartupTimeoutInSeconds());
+    }
+
+    //TODO
+    private void killChildProcessesOnWindows(boolean isForced) {
+        for (ProcessHandle childProcessHandle : container.children().collect(Collectors.toList())) {
+            CompletableFuture<ProcessHandle> onExit = childProcessHandle.onExit();
+            if (isForced) {
+                childProcessHandle.destroyForcibly();
+            } else {
+                childProcessHandle.destroy();
+            }
+            //for whatever reason windows doesnt wait for the termination,
+            // and parent process returns immediately with exitCode 1 but is not exited, leading to
+            // "failed to start the distribution" bc files that should be deleted
+            // are used by another process, so we need this here.
+            onExit.join();
+        }
+    }
+
+    private void deleteTempFilesOnWindows(Path dPath) {
+        if (Files.exists(dPath)) {
+            try (Stream<Path> walk = Files.walk(dPath)) {
+                walk.sorted(Comparator.reverseOrder())
+                        .forEach(s -> {
+                            try {
+                                Files.delete(s);
+                            } catch (IOException e) {
+                                throw new RuntimeException("Could not delete temp directory for distribution", e);
+                            }
+                        });
+            } catch (IOException e) {
+                throw new RuntimeException("Could not traverse temp directory for distribution to delete files", e);
+            }
+        }
     }
 
     public void resetConfiguration() {

@@ -8,7 +8,6 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -22,7 +21,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,6 +52,7 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
     private KeycloakQuarkusConfiguration configuration;
     private Process container;
     private static AtomicBoolean restart = new AtomicBoolean();
+    private static AtomicBoolean firstStart = new AtomicBoolean(true);
 
     @Inject
     private Instance<SuiteContext> suiteContext;
@@ -158,15 +157,21 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
             commands.add(configuration.getProvidersPath().resolve("bin") + File.separator + SCRIPT_CMD_INVOKABLE);
         } else {
             commands.add(SCRIPT_CMD_INVOKABLE);
+            commands.add("-v"); // see #11185, has to be fixed before using -v on windows.
         }
 
-        //commands.add("-v");
         commands.add("start");
-        //TODO: use either a firstStart flag or the configure.xml ant exec task that is only used for unix (not recommended) - the following 4 commands are a sledgehammer approach and should not make it into another iteration, but it works
-        commands.add("--auto-build");
-        commands.add("--http-relative-path=/auth");
+
+        //to not rely on ANT... TODO: make sure this is wanted. imo it should.
+        if (SystemUtils.IS_OS_WINDOWS && firstStart.compareAndSet(true, false)) {
+            log.infof("===== FIRST START: ADDING AUTOBUILD AND PATH TO THE MIX =====");
+            commands.add("--auto-build");
+            commands.add("--http-relative-path=/auth");
+            commands.add("--cache=local");
+        }
+
         commands.add("--http-enabled=true");
-        commands.add("--cache=local");
+
         if (Boolean.parseBoolean(System.getProperty("auth.server.debug", "false"))) {
             commands.add("--debug");
             if (configuration.getDebugPort() > 0) {

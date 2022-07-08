@@ -45,7 +45,7 @@
     <files>
         <file>
             <source>src/main/content/conf/cluster-ha.xml</source>
-            <!-- changed to file.seperator bc of error shown in build on windows, and not sure what effects this had... -->
+            <!-- use file.seperator to avoid error in build on windows -->
             <outputDirectory>${file.separator}auth-server-quarkus${file.separator}conf</outputDirectory>
             <destName>cluster-ha.xml</destName>
             <filtered>true</filtered>

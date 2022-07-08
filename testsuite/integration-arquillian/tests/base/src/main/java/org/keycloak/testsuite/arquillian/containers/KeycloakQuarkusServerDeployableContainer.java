@@ -91,11 +91,6 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
                 // On Windows, we're executing kc.bat in a runtime as "keycloak",
                 // so tha java process is an actual child process in a process tree that
                 // we have to kill first before parent.
-                /*try {
-                    Runtime.getRuntime().exec(new String[]{"cmd", "/c", "taskkill /fi \"WINDOWTITLE eq "+SCRIPT_CMD_INVOKABLE+"*\" /t /f"});
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to stop the server", e);
-                }*/
                 killChildProcessesOnWindows(false);
             }
 
@@ -103,16 +98,11 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
             container.waitFor(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             if (SystemUtils.IS_OS_WINDOWS) {
-                /* try {
+                try {
                     killChildProcessesOnWindows(true);
                 } catch (Exception ex) {
                     throw new RuntimeException("Failed to stop the server", ex);
-                }*/
-                /*try {
-                    Runtime.getRuntime().exec(new String[]{"..."});
-                } catch (IOException ex) {
-                    throw new RuntimeException("Failed to stop the server", ex);
-                }*/
+                }
             }
             container.destroyForcibly();
         }
@@ -195,11 +185,10 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
 
         commands.add("start");
 
-        //to not rely on ANT... TODO: make sure this is wanted. imo it should.
         if (SystemUtils.IS_OS_WINDOWS && firstStart.compareAndSet(true, false)) {
             log.infof("===== FIRST START: Re-augmenting... =====");
             log.infof("System: kc.home.dir: " + System.getProperty("kc.home.dir"));
-            commands.add("--auto-build");
+            commands.add("--build");
             commands.add("--http-relative-path=/auth");
             commands.add("--cache=local");
         }
@@ -342,10 +331,11 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
             } else {
                 childProcessHandle.destroy();
             }
-            //for whatever reason windows doesnt wait for the termination,
-            // and parent process returns immediately with exitCode 1 but is not exited, leading to
-            // "failed to start the distribution" bc files that should be deleted
-            // are used by another process, so we need this here.
+            // windows doesn't wait for child process termination,
+            // so parent process returns immediately with exitCode 1, but childs are still running,
+            // leading to distribution startup failure bc files that should be deleted
+            // are still used by another process. So we wait here until the child
+            // process(es) are really deleted.
             onExit.join();
         }
     }

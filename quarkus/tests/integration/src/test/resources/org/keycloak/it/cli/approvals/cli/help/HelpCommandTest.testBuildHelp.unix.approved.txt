@@ -104,4 +104,3 @@ Examples:
   Change the relative path:
 
       $ kc.sh build --http-relative-path=/auth
-

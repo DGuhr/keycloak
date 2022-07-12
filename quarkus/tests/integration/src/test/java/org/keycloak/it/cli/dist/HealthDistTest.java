@@ -32,9 +32,15 @@ public class HealthDistTest {
     void testHealthEndpointNotEnabled() {
         when().get("/health").then()
                 .statusCode(404);
+        when().get("/q/health").then()
+                .statusCode(404);
         when().get("/health/live").then()
                 .statusCode(404);
+        when().get("/q/health/live").then()
+                .statusCode(404);
         when().get("/health/ready").then()
+                .statusCode(404);
+        when().get("/q/health/ready").then()
                 .statusCode(404);
     }
 

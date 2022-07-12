@@ -27,8 +27,8 @@ public abstract class AbstractStartCommand extends AbstractCommand implements Ru
     // remove this once auto-build is removed
     public static final String AUTO_BUILD_OPTION_LONG = "--auto-build";
     public static final String AUTO_BUILD_OPTION_SHORT = "-b";
-
-    public static final String NO_AUTO_BUILD_OPTION_LONG = "--no-auto-build";
+    public static final String NO_BUILD_OPTION_LONG = "--no-build";
+    public static final String DEFAULT_WARN_MESSAGE_REPEATED_AUTO_BUILD_OPTION = "WARNING: The '--auto-build' option for 'start' command is DEPRECATED and no longer needed. When executing the '" + Start.NAME + "' command, a new server image is automatically built based on the configuration. If you want to disable this behavior and achieve an optimal startup time, use the '" + NO_BUILD_OPTION_LONG + "' option instead.";
 
     @Override
     public void run() {

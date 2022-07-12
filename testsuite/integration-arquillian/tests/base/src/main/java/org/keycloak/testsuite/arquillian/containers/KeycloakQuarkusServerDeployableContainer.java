@@ -153,7 +153,7 @@ public class KeycloakQuarkusServerDeployableContainer implements DeployableConta
         commands.add(getCommand());
         commands.add("-v");
         commands.add("start");
-        commands.add("--no-auto-build");
+        commands.add("--no-build");
         commands.add("--http-enabled=true");
 
         if (Boolean.parseBoolean(System.getProperty("auth.server.debug", "false"))) {

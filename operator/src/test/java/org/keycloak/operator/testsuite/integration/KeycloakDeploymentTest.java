@@ -367,7 +367,7 @@ public class KeycloakDeploymentTest extends BaseOperatorTest {
                     .list()
                     .getItems();
 
-            assertThat(pods.get(0).getSpec().getContainers().get(0).getArgs()).containsExactly("start", "--no-auto-build");
+            assertThat(pods.get(0).getSpec().getContainers().get(0).getArgs()).containsExactly("start", "--no-build");
         } catch (Exception e) {
             savePodLogs();
             throw e;

@@ -523,7 +523,7 @@ public class KeycloakDeployment extends OperatorManagedResource implements Statu
         container.setImage(customImage.orElse(config.keycloak().image()));
 
         if (customImage.isPresent()) {
-            container.getArgs().add("--no-auto-build");
+            container.getArgs().add("--no-build");
         }
 
         container.setImagePullPolicy(config.keycloak().imagePullPolicy());

@@ -27,20 +27,20 @@ import org.keycloak.it.junit5.extension.CLIResult;
 import org.keycloak.it.junit5.extension.DistributionTest;
 import org.keycloak.it.junit5.extension.RawDistOnly;
 import org.keycloak.it.utils.KeycloakDistribution;
+import org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.NO_AUTO_BUILD_OPTION_LONG;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.DEFAULT_WARN_MESSAGE_REPEATED_AUTO_BUILD_OPTION;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.NO_BUILD_OPTION_LONG;
 
 @DistributionTest(reInstall = DistributionTest.ReInstall.NEVER)
 @RawDistOnly(reason = "Containers are immutable")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class StartAutoBuildDistTest {
 
-    private static final String WARNING_MSG_AUTO_BUILD_DEPRECATION_ON_START = "WARNING: The '--auto-build' option for 'start' command is DEPRECATED and no longer needed. When executing the 'start' command, a new server image is automatically built based on the configuration. If you want to disable this behavior and achieve an optimal startup time, use the '--no-auto-build' option instead.";
-
     @Test
-    @Launch({ "start", "--auto-build", "--http-enabled=true", "--hostname-strict=false", "--cache=local" })
+    @Launch({ "start", AbstractStartCommand.AUTO_BUILD_OPTION_LONG, "--http-enabled=true", "--hostname-strict=false", "--cache=local" })
     @Order(1)
     void testStartAutoBuild(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
@@ -49,8 +49,8 @@ public class StartAutoBuildDistTest {
         cliResult.assertMessage("Server configuration updated and persisted. Run the following command to review the configuration:");
         cliResult.assertMessage(KeycloakDistribution.SCRIPT_CMD + " show-config");
         cliResult.assertMessage("Next time you run the server, just run:");
-        cliResult.assertMessage(KeycloakDistribution.SCRIPT_CMD + " start --http-enabled=true --hostname-strict=false");
-        cliResult.assertMessage(WARNING_MSG_AUTO_BUILD_DEPRECATION_ON_START);
+        cliResult.assertMessage(KeycloakDistribution.SCRIPT_CMD + " start " + NO_BUILD_OPTION_LONG + " --http-enabled=true --hostname-strict=false");
+        cliResult.assertMessage(DEFAULT_WARN_MESSAGE_REPEATED_AUTO_BUILD_OPTION);
         assertFalse(cliResult.getOutput().contains("--cache"));
         cliResult.assertStarted();
     }
@@ -104,12 +104,12 @@ public class StartAutoBuildDistTest {
     @Order(7)
     void testShouldReAugWithoutAutoBuildOptionAfterDatabaseChange(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
-        cliResult.assertNoMessage(WARNING_MSG_AUTO_BUILD_DEPRECATION_ON_START);
+        cliResult.assertNoMessage(DEFAULT_WARN_MESSAGE_REPEATED_AUTO_BUILD_OPTION);
         cliResult.assertBuild();
     }
 
     @Test
-    @Launch({ "start", "--db=dev-file", "--http-enabled=true", "--hostname-strict=false", "--cache=local", NO_AUTO_BUILD_OPTION_LONG })
+    @Launch({ "start", "--db=dev-file", "--http-enabled=true", "--hostname-strict=false", "--cache=local", NO_BUILD_OPTION_LONG})
     @Order(8)
     void testShouldReAugAndNeedsAutoBuildOptionBecauseHasNoAutoBuildOption(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;

@@ -31,7 +31,7 @@ import org.keycloak.it.utils.KeycloakDistribution;
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
 
-import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.NO_AUTO_BUILD_OPTION_LONG;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.NO_BUILD_OPTION_LONG;
 
 @DistributionTest(reInstall = DistributionTest.ReInstall.NEVER)
 @RawDistOnly(reason = "Containers are immutable")
@@ -47,7 +47,7 @@ public class BuildAndStartDistTest {
     }
 
     @Test
-    @Launch({ "start", "--http-enabled=true", "--hostname-strict=false", NO_AUTO_BUILD_OPTION_LONG })
+    @Launch({ "start", "--http-enabled=true", "--hostname-strict=false", NO_BUILD_OPTION_LONG})
     @Order(2)
     void testStartUsingCliArgs(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;
@@ -65,7 +65,7 @@ public class BuildAndStartDistTest {
     }
 
     @Test
-    @Launch({ "start", NO_AUTO_BUILD_OPTION_LONG })
+    @Launch({ "start", NO_BUILD_OPTION_LONG})
     @Order(4)
     void testStartUsingConfFile(LaunchResult result) {
         CLIResult cliResult = (CLIResult) result;

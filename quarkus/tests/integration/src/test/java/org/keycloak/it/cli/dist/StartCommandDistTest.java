@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.NO_BUILD_OPTION_LONG;
 
 import org.junit.jupiter.api.Test;
 import org.keycloak.it.cli.StartCommandTest;
@@ -59,7 +60,7 @@ public class StartCommandDistTest extends StartCommandTest {
         cliResult.assertMessage("Server configuration updated and persisted. Run the following command to review the configuration:");
         cliResult.assertMessage(KeycloakDistribution.SCRIPT_CMD + " show-config");
         cliResult.assertMessage("Next time you run the server, just run:");
-        cliResult.assertMessage(KeycloakDistribution.SCRIPT_CMD + " start --http-enabled=true --hostname-strict=false");
+        cliResult.assertMessage(KeycloakDistribution.SCRIPT_CMD + " start " + NO_BUILD_OPTION_LONG + " --http-enabled=true --hostname-strict=false");
         assertFalse(cliResult.getOutput().contains("--cache"));
         cliResult.assertStarted();
     }

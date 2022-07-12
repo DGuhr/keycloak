@@ -19,8 +19,7 @@ package org.keycloak.quarkus.runtime.cli;
 
 import static org.keycloak.quarkus.runtime.Environment.isRebuildCheck;
 import static org.keycloak.quarkus.runtime.Environment.isRebuilt;
-import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.AUTO_BUILD_OPTION_LONG;
-import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.AUTO_BUILD_OPTION_SHORT;
+import static org.keycloak.quarkus.runtime.cli.command.AbstractStartCommand.*;
 import static org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource.hasOptionValue;
 import static org.keycloak.quarkus.runtime.configuration.ConfigArgsConfigSource.parseConfigArgs;
 import static org.keycloak.quarkus.runtime.configuration.Configuration.OPTION_PART_SEPARATOR;
@@ -183,7 +182,7 @@ public final class Picocli {
         exitCode = cmd.execute(configArgsList.toArray(new String[0]));
 
         if(!isDevMode() && exitCode == cmd.getCommandSpec().exitCodeOnSuccess()) {
-            cmd.getOut().printf("Next time you run the server, just run:%n%n\t%s %s %s%n%n", Environment.getCommand(), Start.NAME, String.join(" ", getSanitizedRuntimeCliOptions()));
+            cmd.getOut().printf("Next time you run the server, just run:%n%n\t%s %s %s %s%n%n", Environment.getCommand(), Start.NAME, NO_BUILD_OPTION_LONG, String.join(" ", getSanitizedRuntimeCliOptions()));
         }
 
         return exitCode;
@@ -466,7 +465,7 @@ public final class Picocli {
             }
 
             if (!isRebuildCheck() && (arg.startsWith(AbstractStartCommand.AUTO_BUILD_OPTION_SHORT) || arg.startsWith(AUTO_BUILD_OPTION_LONG))) {
-                System.out.println("WARNING: The '" + arg + "' option for 'start' command is DEPRECATED and no longer needed. When executing the '" + Start.NAME + "' command, a new server image is automatically built based on the configuration. If you want to disable this behavior and achieve an optimal startup time, use the '" + AbstractStartCommand.NO_AUTO_BUILD_OPTION_LONG + "' option instead.");
+                System.out.println(DEFAULT_WARN_MESSAGE_REPEATED_AUTO_BUILD_OPTION);
             }
         }
 

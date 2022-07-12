@@ -99,12 +99,12 @@ Once you run the `build` command, you do not need to set the same **build option
 
 === Second stage: Starting an optimized server instance
 
-In order to achieve an optimal startup time when the server was previously built with any **build option**, you should run the `start` command together with the `--no-auto-build` option and including any **configuration option** you want to set.
+In order to achieve an optimal startup time when the server was previously built with any **build option**, you should run the `start` command together with the `--no-build` option and including any **configuration option** you want to set.
 
 .Run the `start` command to start the server while setting various database options
-<@kc.start parameters="--no-auto-build --db-url-host=keycloak-postgres --db-username=keycloak --db-password=change_me --hostname mykeycloak.acme.com"/>
+<@kc.start parameters="--no-build --db-url-host=keycloak-postgres --db-username=keycloak --db-password=change_me --hostname mykeycloak.acme.com"/>
 
-The `--no-auto-build` indicates that the server was previously configured with any build option so that it no longer need to run the `build` command prior to start the server.
+The `--no-build` indicates that the server was previously configured with any build option so that it no longer need to run the `build` command prior to start the server.
 
 Note that if you invoke commands containing special shell characters such as `;` using the CLI, you need to escape those characters. In that situation, you might choose to use the `keycloak.conf` file to set configuration options instead.
 
@@ -124,7 +124,7 @@ hostname=mykeycloak.acme.com
 ```
 
 .Start the server
-<@kc.start parameters="--no-auto-build"/>
+<@kc.start parameters="--no-build"/>
 
 By using the `keycloak.conf` file, the server can omit some steps at startup. As a result, the server starts faster.
 

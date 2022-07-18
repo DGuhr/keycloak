@@ -35,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -141,11 +142,13 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                     try {
                         killChildProcessesOnWindows(true);
                     } catch (Exception e) {
-                        throw new RuntimeException("Failed to stop the server", e);
+                        System.out.println("\n\n Stop failed! Exception when killing child processes. processID: " + keycloak.pid() + "Exception: " + e.getMessage() + "\n\n Stacktrace: " + Arrays.toString(e.getStackTrace()));
+                        //throw new RuntimeException("Failed to stop the server", e);
                     }
                 }
                 keycloak.destroyForcibly();
-                throw new RuntimeException("Failed to stop the server", cause);
+                System.out.println("\n\n Stop failed! Exception when killing child processes. processID: " + keycloak.pid() + "Exception: " + cause.getMessage() + "\n\n Stacktrace: " + Arrays.toString(cause.getStackTrace()));
+                //throw new RuntimeException("Failed to stop the server", cause);
             }
         }
 

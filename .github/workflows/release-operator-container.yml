@@ -1,4 +1,4 @@
-name: Release Keycloak Operator container
+#name: Release Keycloak Operator container
 
 on:
   workflow_dispatch:

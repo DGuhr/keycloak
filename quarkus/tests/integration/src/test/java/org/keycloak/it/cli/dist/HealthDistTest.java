@@ -30,38 +30,38 @@ public class HealthDistTest {
     @Test
     @Launch({ "start-dev" })
     void testHealthEndpointNotEnabled() {
-        when().get("/health").then()
+        when().get("/health").then().log().ifError()
                 .statusCode(404);
-        when().get("/q/health").then()
+        when().get("/q/health").then().log().ifError()
                 .statusCode(404);
-        when().get("/health/live").then()
+        when().get("/health/live").then().log().ifError()
                 .statusCode(404);
-        when().get("/q/health/live").then()
+        when().get("/q/health/live").then().log().ifError()
                 .statusCode(404);
-        when().get("/health/ready").then()
+        when().get("/health/ready").then().log().ifError()
                 .statusCode(404);
-        when().get("/q/health/ready").then()
+        when().get("/q/health/ready").then().log().ifError()
                 .statusCode(404);
     }
 
     @Test
     @Launch({ "start-dev", "--health-enabled=true" })
     void testHealthEndpoint() {
-        when().get("/health").then()
+        when().get("/health").then().log().ifError()
                 .statusCode(200);
-        when().get("/health/live").then()
+        when().get("/health/live").then().log().ifError()
                 .statusCode(200);
-        when().get("/health/ready").then()
+        when().get("/health/ready").then().log().ifError()
                 .statusCode(200);
         // Metrics is endpoint independent
-        when().get("/metrics").then()
+        when().get("/metrics").then().log().ifError()
                 .statusCode(404);
     }
 
     @Test
     @Launch({ "start-dev", "--health-enabled=true" })
     void testHealthEndpointDoesNotEnableMetrics() {
-        when().get("/metrics").then()
+        when().get("/metrics").then().log().ifError()
                 .statusCode(404);
     }
 }

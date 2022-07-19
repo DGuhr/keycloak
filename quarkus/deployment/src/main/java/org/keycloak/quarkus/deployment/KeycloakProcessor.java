@@ -506,14 +506,14 @@ class KeycloakProcessor {
     }
 
     @BuildStep
-    void disableHealthEndpoint(BuildProducer<RouteBuildItem> routes, BuildProducer<BuildTimeConditionBuildItem> removeBeans,
-            CombinedIndexBuildItem index) {
+    void disableHealthEndpoint(BuildProducer<RouteBuildItem> routes) {
         boolean healthDisabled = !isHealthEnabled();
 
         if (healthDisabled) {
             routes.produce(RouteBuildItem.builder().route(DEFAULT_HEALTH_ENDPOINT.concat("/*")).handler(new NotFoundHandler()).build());
         }
 
+        /*
         boolean metricsDisabled = !isMetricsEnabled();
 
         if (healthDisabled || metricsDisabled) {
@@ -521,7 +521,7 @@ class KeycloakProcessor {
             ClassInfo disabledBean = index.getIndex()
                     .getClassByName(DotName.createSimple(KeycloakReadyHealthCheck.class.getName()));
             removeBeans.produce(new BuildTimeConditionBuildItem(disabledBean.asClass(), false));
-        }
+        }*/
     }
 
     @BuildStep

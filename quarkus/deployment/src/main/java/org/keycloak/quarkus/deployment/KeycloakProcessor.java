@@ -205,7 +205,7 @@ class KeycloakProcessor {
      * <p>The main reason we have this build step is because we re-use the same persistence unit from {@code keycloak-model-jpa}
      * module, the same used by the Wildfly distribution. The {@code hibernate-orm} extension expects that the dialect is statically
      * set to the persistence unit if there is any from the classpath and we use this method to obtain the dialect from the configuration
-     * file so that we can build the application with whatever dialect we want. In addition to the dialect, we should also be 
+     * file so that we can build the application with whatever dialect we want. In addition to the dialect, we should also be
      * allowed to set any additional defaults that we think that makes sense.
      *
      * @param config
@@ -506,14 +506,14 @@ class KeycloakProcessor {
     }
 
     @BuildStep
-    void disableHealthEndpoint(BuildProducer<RouteBuildItem> routes) {
+    void disableHealthEndpoint(BuildProducer<RouteBuildItem> routes, BuildProducer<BuildTimeConditionBuildItem> removeBeans,
+            CombinedIndexBuildItem index) {
         boolean healthDisabled = !isHealthEnabled();
 
         if (healthDisabled) {
             routes.produce(RouteBuildItem.builder().route(DEFAULT_HEALTH_ENDPOINT.concat("/*")).handler(new NotFoundHandler()).build());
         }
 
-        /*
         boolean metricsDisabled = !isMetricsEnabled();
 
         if (healthDisabled || metricsDisabled) {
@@ -521,7 +521,7 @@ class KeycloakProcessor {
             ClassInfo disabledBean = index.getIndex()
                     .getClassByName(DotName.createSimple(KeycloakReadyHealthCheck.class.getName()));
             removeBeans.produce(new BuildTimeConditionBuildItem(disabledBean.asClass(), false));
-        }*/
+        }
     }
 
     @BuildStep

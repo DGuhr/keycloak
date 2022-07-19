@@ -138,17 +138,17 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                 keycloak.waitFor(10, TimeUnit.SECONDS);
                 exitCode = keycloak.exitValue();
             } catch (Exception cause) {
+                Thread.currentThread().interrupt();
                 if (Environment.isWindows()) {
                     try {
                         killChildProcessesOnWindows(true);
                     } catch (Exception e) {
-                        System.out.println("\n\n Stop failed! Exception when killing child processes. processID: " + keycloak.pid() + "Exception: " + e.getMessage() + "\n\n Stacktrace: " + Arrays.toString(e.getStackTrace()));
-                        //throw new RuntimeException("Failed to stop the server", e);
+                        throw new RuntimeException("Failed to stop the server", e);
                     }
                 }
                 keycloak.destroyForcibly();
-                System.out.println("\n\n Stop failed! Exception when killing child processes. processID: " + keycloak.pid() + "Exception: " + cause.getMessage() + "\n\n Stacktrace: " + Arrays.toString(cause.getStackTrace()));
-                //throw new RuntimeException("Failed to stop the server", cause);
+                System.out.println("\n\n Stop failed! Exception when killing forcibly. processID: " + keycloak.pid() + "Exception: " + cause.getMessage() + "\n\n Stacktrace: " + Arrays.toString(cause.getStackTrace()));
+                throw new RuntimeException("Failed to stop the server", cause);
             }
         }
 

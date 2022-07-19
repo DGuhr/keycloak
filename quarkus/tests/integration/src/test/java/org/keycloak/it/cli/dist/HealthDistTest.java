@@ -30,17 +30,17 @@ public class HealthDistTest {
     @Test
     @Launch({ "start-dev" })
     void testHealthEndpointNotEnabled() {
-        when().get("/health").then().log().ifError()
+        when().get("/health").then()
                 .statusCode(404);
-        when().get("/q/health").then().log().ifError()
+        when().get("/q/health").then()
                 .statusCode(404);
-        when().get("/health/live").then().log().ifError()
+        when().get("/health/live").then()
                 .statusCode(404);
-        when().get("/q/health/live").then().log().ifError()
+        when().get("/q/health/live").then()
                 .statusCode(404);
-        when().get("/health/ready").then().log().ifError()
+        when().get("/health/ready").then()
                 .statusCode(404);
-        when().get("/q/health/ready").then().log().ifError()
+        when().get("/q/health/ready").then()
                 .statusCode(404);
     }
 
@@ -54,7 +54,7 @@ public class HealthDistTest {
         when().get("/health/ready").then().log().ifError()
                 .statusCode(200);
         // Metrics is endpoint independent
-        when().get("/metrics").then().log().ifError()
+        when().get("/metrics").then()
                 .statusCode(404);
     }
 

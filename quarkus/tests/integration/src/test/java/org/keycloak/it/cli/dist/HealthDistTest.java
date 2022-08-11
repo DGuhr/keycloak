@@ -58,6 +58,22 @@ public class HealthDistTest {
     }
 
     @Test
+    @Launch({ "start-dev", "--http-relative-path=auth", "--health-enabled=true" })
+    void failHealthEndpointUsingRelativePathWithoutLeadingSlash() {
+        when().get("/auth/health").then()
+                .statusCode(404);
+        when().get("/auth/health/live").then()
+                .statusCode(404);
+        when().get("/auth/health/ready").then()
+                .statusCode(404);
+        // Metrics should not be enabled
+        when().get("/auth/metrics").then()
+                .statusCode(404);
+        when().get("/health").then()
+                .statusCode(404);
+    }
+
+    @Test
     @Launch({ "start-dev", "--http-relative-path=/auth", "--health-enabled=true" })
     void testHealthEndpointUsingRelativePathWithLeadingSlash() {
         when().get("/auth/health").then()

@@ -132,7 +132,10 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                 destroyDescendantsOnWindows(keycloak, false);
 
                 keycloak.destroy();
+
                 keycloak.waitFor(DEFAULT_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                //make sure streams are closed, eve
+                shutdownOutputExecutor();
                 exitCode = keycloak.exitValue();
             } catch (Exception cause) {
                 destroyDescendantsOnWindows(keycloak, true);

@@ -132,10 +132,13 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
                 destroyDescendantsOnWindows(keycloak, false);
 
                 keycloak.destroy();
-
-                keycloak.waitFor(DEFAULT_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                //make sure streams are closed, eve
+                //make sure the process streams are closed, even when process should be ended so exitvalue does not raise exception
                 shutdownOutputExecutor();
+                keycloak.getOutputStream().close();
+                keycloak.getErrorStream().close();
+                keycloak.waitFor(DEFAULT_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+
                 exitCode = keycloak.exitValue();
             } catch (Exception cause) {
                 destroyDescendantsOnWindows(keycloak, true);
@@ -163,7 +166,6 @@ public final class RawKeycloakDistribution implements KeycloakDistribution {
 
             allProcesses = CompletableFuture.allOf(allProcesses, process.onExit());
         }
-
         try {
             allProcesses.get(DEFAULT_SHUTDOWN_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (Exception cause) {

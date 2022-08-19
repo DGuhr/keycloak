@@ -13,7 +13,8 @@
     <name>WebAuthn tests</name>
 
     <properties>
-        <selenium.version>4.1.0</selenium.version>
+        <!-- as per: https://stackoverflow.com/questions/38869640/how-to-use-arquillian-graphene-2-with-chromedriver - driver and chrome version seem to match as per https://github.com/keycloak/keycloak/runs/7899303587?check_suite_focus=true#step:9:5948 -->
+        <selenium.version>4.4.0</selenium.version>
         <graphene.webdriver.version>3.0.0-alpha.3</graphene.webdriver.version>
         <htmlunit.driver.version>3.58.0</htmlunit.driver.version>
         <arquillian.drone.version>3.0.0-alpha.4</arquillian.drone.version>
